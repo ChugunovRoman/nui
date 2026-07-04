@@ -31,9 +31,10 @@
 
 #ifdef _WIN32
 #include <windows.h>
-#elif defined(__linux__)
+#else
 #include <unistd.h>
-#elif defined(__APPLE__)
+#endif
+#ifdef __APPLE__
 #include <mach-o/dyld.h>
 #endif
 
