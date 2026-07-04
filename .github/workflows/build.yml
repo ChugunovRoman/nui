@@ -104,6 +104,7 @@ jobs:
       with:
         name: nui-${{ matrix.os.artifact }}
         path: nui-${{ matrix.os.artifact }}.zip
+        retention-days: 30
 
     - name: Upload artifact (Linux/macOS)
       if: runner.os != 'Windows'
@@ -111,3 +112,4 @@ jobs:
       with:
         name: nui-${{ matrix.os.artifact }}
         path: nui-${{ matrix.os.artifact }}.tar.gz
+        retention-days: 30
