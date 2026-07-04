@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32"><Configuration>Debug</Configuration><Platform>Win32</Platform></ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32"><Configuration>Release</Configuration><Platform>Win32</Platform></ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64"><Configuration>Debug</Configuration><Platform>x64</Platform></ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64"><Configuration>Release</Configuration><Platform>x64</Platform></ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <ProjectGuid>{AAAA3333-3333-3333-3333-333333333333}</ProjectGuid>
+    <RootNamespace>freetype</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)bin\$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>$(SolutionDir)obj\$(Configuration)\freetype\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)bin\$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>$(SolutionDir)obj\$(Configuration)\freetype\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)bin\$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>$(SolutionDir)obj\$(Configuration)\freetype\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)bin\$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>$(SolutionDir)obj\$(Configuration)\freetype\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>FT2_BUILD_LIBRARY=1;_CRT_SECURE_NO_WARNINGS;FT_CONFIG_OPTION_SYSTEM_ZLIB=0;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>..\SDL_ttf\external\freetype\include;..\SDL_ttf\external\freetype\src\gzip;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/UFT_CONFIG_OPTION_USE_ZLIB %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Lib>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>FT2_BUILD_LIBRARY=1;_CRT_SECURE_NO_WARNINGS;FT_CONFIG_OPTION_SYSTEM_ZLIB=0;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>..\SDL_ttf\external\freetype\include;..\SDL_ttf\external\freetype\src\gzip;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/UFT_CONFIG_OPTION_USE_ZLIB %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Lib>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>FT2_BUILD_LIBRARY=1;_CRT_SECURE_NO_WARNINGS;FT_CONFIG_OPTION_SYSTEM_ZLIB=0;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>..\SDL_ttf\external\freetype\include;..\SDL_ttf\external\freetype\src\gzip;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/UFT_CONFIG_OPTION_USE_ZLIB %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Lib>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>FT2_BUILD_LIBRARY=1;_CRT_SECURE_NO_WARNINGS;FT_CONFIG_OPTION_SYSTEM_ZLIB=0;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>..\SDL_ttf\external\freetype\include;..\SDL_ttf\external\freetype\src\gzip;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/UFT_CONFIG_OPTION_USE_ZLIB %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Lib>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\autofit\autofit.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\bdf\bdf.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\cache\ftcache.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\cff\cff.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\cid\type1cid.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\gxvalid\gxvalid.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\lzw\ftlzw.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\otvalid\otvalid.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\pcf\pcf.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\pfr\pfr.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\psaux\psaux.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\pshinter\pshinter.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\psnames\psnames.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\raster\raster.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\sfnt\sfnt.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\smooth\smooth.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\truetype\truetype.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\type1\type1.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\type42\type42.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\winfonts\winfnt.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\sdf\sdf.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\sdf\ftbsdf.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\sdf\ftsdf.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\sdf\ftsdfcommon.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\sdf\ftsdfrend.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\svg\svg.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\svg\ftsvg.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftbase.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftbbox.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftbdf.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftbitmap.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftcid.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftdebug.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftfstype.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftgasp.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftglyph.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftgxval.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftinit.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftmm.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftotval.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftpfr.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftstroke.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftsynth.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftsystem.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\fttype1.c" />
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftwinfnt.c" />
+    <ClCompile Include="ftgzip_stub.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>

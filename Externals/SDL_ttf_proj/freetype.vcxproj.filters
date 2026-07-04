@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="..\SDL_ttf\external\freetype\src\autofit"><UniqueIdentifier>{..\SDL_ttf\external\freetype\src\autofit}</UniqueIdentifier></Filter>
+    <Filter Include="..\SDL_ttf\external\freetype\src\base"><UniqueIdentifier>{..\SDL_ttf\external\freetype\src\base}</UniqueIdentifier></Filter>
+    <Filter Include="..\SDL_ttf\external\freetype\src\bdf"><UniqueIdentifier>{..\SDL_ttf\external\freetype\src\bdf}</UniqueIdentifier></Filter>
+    <Filter Include="..\SDL_ttf\external\freetype\src\cache"><UniqueIdentifier>{..\SDL_ttf\external\freetype\src\cache}</UniqueIdentifier></Filter>
+    <Filter Include="..\SDL_ttf\external\freetype\src\cff"><UniqueIdentifier>{..\SDL_ttf\external\freetype\src\cff}</UniqueIdentifier></Filter>
+    <Filter Include="..\SDL_ttf\external\freetype\src\cid"><UniqueIdentifier>{..\SDL_ttf\external\freetype\src\cid}</UniqueIdentifier></Filter>
+    <Filter Include="..\SDL_ttf\external\freetype\src\gxvalid"><UniqueIdentifier>{..\SDL_ttf\external\freetype\src\gxvalid}</UniqueIdentifier></Filter>
+    <Filter Include="..\SDL_ttf\external\freetype\src\lzw"><UniqueIdentifier>{..\SDL_ttf\external\freetype\src\lzw}</UniqueIdentifier></Filter>
+    <Filter Include="..\SDL_ttf\external\freetype\src\otvalid"><UniqueIdentifier>{..\SDL_ttf\external\freetype\src\otvalid}</UniqueIdentifier></Filter>
+    <Filter Include="..\SDL_ttf\external\freetype\src\pcf"><UniqueIdentifier>{..\SDL_ttf\external\freetype\src\pcf}</UniqueIdentifier></Filter>
+    <Filter Include="..\SDL_ttf\external\freetype\src\pfr"><UniqueIdentifier>{..\SDL_ttf\external\freetype\src\pfr}</UniqueIdentifier></Filter>
+    <Filter Include="..\SDL_ttf\external\freetype\src\psaux"><UniqueIdentifier>{..\SDL_ttf\external\freetype\src\psaux}</UniqueIdentifier></Filter>
+    <Filter Include="..\SDL_ttf\external\freetype\src\pshinter"><UniqueIdentifier>{..\SDL_ttf\external\freetype\src\pshinter}</UniqueIdentifier></Filter>
+    <Filter Include="..\SDL_ttf\external\freetype\src\psnames"><UniqueIdentifier>{..\SDL_ttf\external\freetype\src\psnames}</UniqueIdentifier></Filter>
+    <Filter Include="..\SDL_ttf\external\freetype\src\raster"><UniqueIdentifier>{..\SDL_ttf\external\freetype\src\raster}</UniqueIdentifier></Filter>
+    <Filter Include="..\SDL_ttf\external\freetype\src\sdf"><UniqueIdentifier>{..\SDL_ttf\external\freetype\src\sdf}</UniqueIdentifier></Filter>
+    <Filter Include="..\SDL_ttf\external\freetype\src\sfnt"><UniqueIdentifier>{..\SDL_ttf\external\freetype\src\sfnt}</UniqueIdentifier></Filter>
+    <Filter Include="..\SDL_ttf\external\freetype\src\smooth"><UniqueIdentifier>{..\SDL_ttf\external\freetype\src\smooth}</UniqueIdentifier></Filter>
+    <Filter Include="..\SDL_ttf\external\freetype\src\svg"><UniqueIdentifier>{..\SDL_ttf\external\freetype\src\svg}</UniqueIdentifier></Filter>
+    <Filter Include="..\SDL_ttf\external\freetype\src\truetype"><UniqueIdentifier>{..\SDL_ttf\external\freetype\src\truetype}</UniqueIdentifier></Filter>
+    <Filter Include="..\SDL_ttf\external\freetype\src\type1"><UniqueIdentifier>{..\SDL_ttf\external\freetype\src\type1}</UniqueIdentifier></Filter>
+    <Filter Include="..\SDL_ttf\external\freetype\src\type42"><UniqueIdentifier>{..\SDL_ttf\external\freetype\src\type42}</UniqueIdentifier></Filter>
+    <Filter Include="..\SDL_ttf\external\freetype\src\winfonts"><UniqueIdentifier>{..\SDL_ttf\external\freetype\src\winfonts}</UniqueIdentifier></Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\autofit\autofit.c"><Filter>..\SDL_ttf\external\freetype\src\autofit</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\bdf\bdf.c"><Filter>..\SDL_ttf\external\freetype\src\bdf</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\cache\ftcache.c"><Filter>..\SDL_ttf\external\freetype\src\cache</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\cff\cff.c"><Filter>..\SDL_ttf\external\freetype\src\cff</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\cid\type1cid.c"><Filter>..\SDL_ttf\external\freetype\src\cid</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\gxvalid\gxvalid.c"><Filter>..\SDL_ttf\external\freetype\src\gxvalid</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\lzw\ftlzw.c"><Filter>..\SDL_ttf\external\freetype\src\lzw</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\otvalid\otvalid.c"><Filter>..\SDL_ttf\external\freetype\src\otvalid</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\pcf\pcf.c"><Filter>..\SDL_ttf\external\freetype\src\pcf</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\pfr\pfr.c"><Filter>..\SDL_ttf\external\freetype\src\pfr</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\psaux\psaux.c"><Filter>..\SDL_ttf\external\freetype\src\psaux</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\pshinter\pshinter.c"><Filter>..\SDL_ttf\external\freetype\src\pshinter</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\psnames\psnames.c"><Filter>..\SDL_ttf\external\freetype\src\psnames</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\raster\raster.c"><Filter>..\SDL_ttf\external\freetype\src\raster</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\sfnt\sfnt.c"><Filter>..\SDL_ttf\external\freetype\src\sfnt</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\smooth\smooth.c"><Filter>..\SDL_ttf\external\freetype\src\smooth</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\truetype\truetype.c"><Filter>..\SDL_ttf\external\freetype\src\truetype</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\type1\type1.c"><Filter>..\SDL_ttf\external\freetype\src\type1</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\type42\type42.c"><Filter>..\SDL_ttf\external\freetype\src\type42</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\winfonts\winfnt.c"><Filter>..\SDL_ttf\external\freetype\src\winfonts</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\sdf\sdf.c"><Filter>..\SDL_ttf\external\freetype\src\sdf</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\sdf\ftbsdf.c"><Filter>..\SDL_ttf\external\freetype\src\sdf</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\sdf\ftsdf.c"><Filter>..\SDL_ttf\external\freetype\src\sdf</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\sdf\ftsdfcommon.c"><Filter>..\SDL_ttf\external\freetype\src\sdf</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\sdf\ftsdfrend.c"><Filter>..\SDL_ttf\external\freetype\src\sdf</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\svg\svg.c"><Filter>..\SDL_ttf\external\freetype\src\svg</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\svg\ftsvg.c"><Filter>..\SDL_ttf\external\freetype\src\svg</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftbase.c"><Filter>..\SDL_ttf\external\freetype\src\base</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftbbox.c"><Filter>..\SDL_ttf\external\freetype\src\base</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftbdf.c"><Filter>..\SDL_ttf\external\freetype\src\base</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftbitmap.c"><Filter>..\SDL_ttf\external\freetype\src\base</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftcid.c"><Filter>..\SDL_ttf\external\freetype\src\base</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftdebug.c"><Filter>..\SDL_ttf\external\freetype\src\base</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftfstype.c"><Filter>..\SDL_ttf\external\freetype\src\base</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftgasp.c"><Filter>..\SDL_ttf\external\freetype\src\base</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftglyph.c"><Filter>..\SDL_ttf\external\freetype\src\base</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftgxval.c"><Filter>..\SDL_ttf\external\freetype\src\base</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftinit.c"><Filter>..\SDL_ttf\external\freetype\src\base</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftmm.c"><Filter>..\SDL_ttf\external\freetype\src\base</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftotval.c"><Filter>..\SDL_ttf\external\freetype\src\base</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftpfr.c"><Filter>..\SDL_ttf\external\freetype\src\base</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftstroke.c"><Filter>..\SDL_ttf\external\freetype\src\base</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftsynth.c"><Filter>..\SDL_ttf\external\freetype\src\base</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftsystem.c"><Filter>..\SDL_ttf\external\freetype\src\base</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\fttype1.c"><Filter>..\SDL_ttf\external\freetype\src\base</Filter></ClCompile>
+    <ClCompile Include="..\SDL_ttf\external\freetype\src\base\ftwinfnt.c"><Filter>..\SDL_ttf\external\freetype\src\base</Filter></ClCompile>
+    <ClCompile Include="ftgzip_stub.c" />
+  </ItemGroup>
+</Project>

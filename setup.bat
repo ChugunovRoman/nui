@@ -49,14 +49,21 @@ if not exist "%SCRIPT_DIR%src\renderer\stb_image.h" (
     echo       Already exists.
 )
 
+REM ── Step 4: Generate VS solution ──────────────────────────────
+echo.
+echo [4/4] Generating Visual Studio solution...
+if exist "%SCRIPT_DIR%build" rmdir /s /q "%SCRIPT_DIR%build"
+cmake -B "%SCRIPT_DIR%build" -S "%SCRIPT_DIR%" -G "Visual Studio 17 2022" -A x64
+if errorlevel 1 (
+    echo ERROR: CMake configure failed. Is CMake installed?
+    exit /b 1
+)
+
 echo.
 echo ============================================
 echo   Setup complete!
 echo.
-echo   Open nui.sln in Visual Studio
+echo   Open build\nui.sln in Visual Studio
 echo   Select Release ^| x64 and build.
-echo.
-echo   First build will run CMake to configure
-echo   dependencies. Subsequent builds are fast.
 echo ============================================
 pause

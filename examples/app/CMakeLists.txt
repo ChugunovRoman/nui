@@ -5,6 +5,11 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+# Static CRT on MSVC
+if(MSVC)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()
+
 # ── Locate the library sources ───────────────────────────────────
 set(NUI_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../src)
 set(NUI_EXTERNALS ${CMAKE_CURRENT_SOURCE_DIR}/../../Externals)

@@ -1,5 +1,7 @@
 # NUI
 
+<img src="docs/img/img1.png" alt="NUI Screenshot" width="800"/>
+
 Лёгкий кроссплатформенный UI toolkit для десктоп-приложений, вдохновлённый архитектурой xrUICore.
 
 ## Особенности
@@ -18,7 +20,9 @@
 
 - **Git** — для клонирования с submodule'ами
 - **CMake 3.16+** — для сборки зависимостей
-- **Visual Studio 2019/2022** — с компонентом "Desktop development with C++"
+- **Windows**: Visual Studio 2019/2022 с компонентом "Desktop development with C++"
+- **Linux**: GCC 9+ или Clang 10+, `libx11-dev` и связанные пакеты
+- **macOS**: Xcode Command Line Tools
 
 ### Шаг 1: Клонировать
 
@@ -29,9 +33,10 @@ cd nui
 
 ### Шаг 2: Первичная настройка (один раз)
 
-```bash
-setup.bat
-```
+| ОС | Команда |
+|----|---------|
+| **Windows** | `setup.bat` |
+| **Linux / macOS** | `chmod +x setup.sh && ./setup.sh` |
 
 Скрипт делает:
 - Инициализирует git submodules (SDL2, SDL_ttf, pugixml)
@@ -40,11 +45,25 @@ setup.bat
 
 ### Шаг 3: Собрать
 
-1. Открыть `nui.sln` в Visual Studio
-2. Выбрать **Release | x64**
-3. **Build → Build Solution** (Ctrl+Shift+B)
+**Windows (Visual Studio):**
+```bash
+nui.sln          # открыть в VS
+# Release | x64 → Build → Build Solution (Ctrl+Shift+B)
+```
 
-При первом билде CMake автоматически настроит зависимости. Последующие билды — без CMake, быстро.
+**Windows (CMake):**
+```bash
+cmake -B build -G "Visual Studio 17 2022" -A x64
+cmake --build build --config Release
+```
+
+**Linux / macOS (CMake):**
+```bash
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j$(nproc)
+```
+
+> **Windows:** Всегда указывайте `-G "Visual Studio 17 2022"` иначе CMake может выбрать GCC из Strawberry Perl или MinGW.
 
 ### Шаг 4: Запустить
 
@@ -60,15 +79,19 @@ build\bin\Release\nui-example.exe
 
 ```
 nui/
-├── nui.sln                     ← Открыть в Visual Studio
-├── nui-build.vcxproj           ← Обёртка: запускает CMake при билде
-├── setup.bat                   ← Первичная настройка (submodules + теги)
-├── CMakeLists.txt              ← Корневой CMake (собирает всё)
+├── nui.sln                     ← VS Solution (собирает всё через .vcxproj)
+├── nui.vcxproj                 ← VS: статическая библиотека NUI
+├── setup.bat                   ← Настройка Windows (submodules + теги + cmake)
+├── setup.sh                    ← Настройка Linux / macOS
+├── CMakeLists.txt              ← Корневой CMake (альтернатива .sln)
 │
 ├── Externals/                  ← Git submodules (зависимости)
 │   ├── SDL2/                   ←   SDL2 2.30 (окно, ввод, software renderer)
 │   ├── SDL_ttf/                ←   SDL_ttf 2.22 (шрифты через FreeType)
-│   └── pugixml/                ←   pugixml 1.14 (XML парсер)
+│   ├── pugixml/                ←   pugixml 1.14 (XML парсер)
+│   ├── SDL2_proj/              ←   .vcxproj для SDL2 (генерируется)
+│   ├── SDL_ttf_proj/           ←   .vcxproj для SDL_ttf + freetype
+│   └── pugixml_proj/           ←   .vcxproj для pugixml
 │
 ├── src/                        ← Исходники NUI библиотеки
 │   ├── core/

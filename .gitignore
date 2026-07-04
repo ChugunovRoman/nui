@@ -5,12 +5,17 @@
 *.ncb
 *.sdf
 *.opensdf
+CMakeSettings.json
 
 # Build output
 bin/
 obj/
 build/
+build_deps/
 out/
+
+# vcpkg (legacy, no longer used)
+vcpkg/
 
 # Downloaded headers
 src/renderer/stb_image.h
@@ -21,3 +26,8 @@ src/generated/
 # OS files
 Thumbs.db
 .DS_Store
+
+# CMake build artifacts in Externals (submodules are clean, but just in case)
+Externals/SDL2/build/
+Externals/SDL_ttf/build/
+Externals/pugixml/build/

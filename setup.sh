@@ -47,12 +47,17 @@ else
     echo "      Already exists."
 fi
 
+# ── Step 4: Generate build files ────────────────────────────────
+echo
+echo "[4/4] Generating build files..."
+rm -rf "$SCRIPT_DIR/build"
+cmake -B "$SCRIPT_DIR/build" -S "$SCRIPT_DIR" -DCMAKE_BUILD_TYPE=Release
+
 echo
 echo "============================================"
 echo "  Setup complete!"
 echo
-echo "  Build with:"
-echo "    cmake -B build -DCMAKE_BUILD_TYPE=Release"
+echo "  Build:"
 echo "    cmake --build build -j\$(nproc)"
 echo
 echo "  Run:"

@@ -7,27 +7,41 @@
 | Виджет | Где | Описание |
 |--------|-----|----------|
 | **Label** | Заголовок, подписи | Текст с выравниванием, word-wrap |
-| **Button** | Say Hello, Play, Quit, Disabled | Hover/press состояния, onClick |
+| **Button** | Say Hello, Play, Quit, Disabled, Async | Hover/press состояния, onClick |
 | **Image** | Правая колонка | PNG с режимом Fit |
-| **EditBox** | Имя, пароль | Ввод текста, placeholder, password mode |
+| **EditBox** | Имя, пароль | Ввод текста (UTF-8), placeholder, password |
 | **ProgressBar** | Синий, зелёный, жёлтый | Процент, кастомная метка |
-| **ScrollView** | Список новостей | Прокрутка с scrollbar |
+| **ScrollView** | Список новостей | Прокрутка с scrollbar, clipping |
 | **Widget** | Контейнеры, разделители | Фон, рамки, parent/child дерево |
+| **Async** | Кнопка Async Task | Фоновая задача без блокировки UI |
 
 ## Сборка
 
+### Windows
+
 ```bash
-cd nui/examples/app
-mkdir build && cd build
-cmake .. -G "Visual Studio 17 2022" -A x64
-cmake --build . --config Release
+# Из корня проекта:
+setup.bat             # если ещё не запускали
+nui.sln               # открыть в VS → Release | x64 → Build
+```
+
+### Linux / macOS
+
+```bash
+# Из корня проекта:
+chmod +x setup.sh && ./setup.sh   # если ещё не запускали
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j$(nproc)
 ```
 
 ## Запуск
 
 ```bash
-# Из папки build/bin (чтобы нашлись ресурсы)
-./nui-example
+# Windows
+build\bin\Release\nui-example.exe
+
+# Linux / macOS
+./build/bin/nui-example
 ```
 
 Положите шрифт в `resources/fonts/` (например, `Roboto-Regular.ttf` или `DejaVuSans.ttf`).
@@ -43,7 +57,7 @@ cmake --build . --config Release
 ```
 examples/app/
 ├── CMakeLists.txt   # Сборка с зависимостями
-├── main.cpp         # Демо всех виджетов (программно + XML fallback)
+├── main.cpp         # Демо всех виджетов + async (программно + XML fallback)
 ├── layout.xml       # XML layout (скопировать в resources/layouts/)
 └── README.md
 ```

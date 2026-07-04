@@ -4,6 +4,16 @@ project(nui VERSION 0.1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Static CRT on MSVC (no vcredist dependency)
+if(MSVC)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+    # Force /MT for all configurations
+    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MT")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MTd")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+endif()
+
 # ── Output directory ──────────────────────────────────────────────
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
@@ -12,10 +22,20 @@ set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(SDL2_DISABLE_INSTALL ON CACHE BOOL "" FORCE)
 set(SDL2_DISABLE_UNINSTALL ON CACHE BOOL "" FORCE)
 set(SDL2TTF_INSTALL OFF CACHE BOOL "" FORCE)
+set(SDL2TTF_VENDORED ON CACHE BOOL "" FORCE)   # Use vendored FreeType from SDL_ttf
+set(FREETYPE_FOUND OFF CACHE BOOL "" FORCE)     # Ignore system FreeType
 
 add_subdirectory(Externals/SDL2 EXCLUDE_FROM_ALL)
 add_subdirectory(Externals/SDL_ttf EXCLUDE_FROM_ALL)
 add_subdirectory(Externals/pugixml EXCLUDE_FROM_ALL)
+
+# Force /MT on MSVC for all External targets
+if(MSVC)
+    set_property(TARGET SDL2-static PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+    set_property(TARGET SDL2main PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+    set_property(TARGET SDL2_ttf PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+    set_property(TARGET pugixml PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()
 
 # ── stb_image (header-only, bundled) ────────────────────────────
 if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/src/renderer/stb_image.h)
