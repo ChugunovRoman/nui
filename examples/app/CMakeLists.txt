@@ -52,6 +52,7 @@ set(EXAMPLE_SOURCES
     # Library sources
     ${NUI_ROOT}/core/application.cpp
     ${NUI_ROOT}/core/input.cpp
+    ${NUI_ROOT}/core/async.cpp
     ${NUI_ROOT}/renderer/canvas.cpp
     ${NUI_ROOT}/renderer/texture.cpp
     ${NUI_ROOT}/renderer/font.cpp

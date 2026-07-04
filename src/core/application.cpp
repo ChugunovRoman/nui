@@ -4,6 +4,7 @@
 
 #include "core/application.h"
 #include "core/input.h"
+#include "core/async.h"
 #include "renderer/canvas.h"
 #include "renderer/font.h"
 #include "ui/widget.h"
@@ -110,6 +111,9 @@ int Application::Run() {
             m_onTick(dt);
         }
 
+        // Process async callbacks from background threads
+        Async::ProcessMainThreadQueue();
+
         // Update and render UI tree
         if (m_root) {
             m_root->Update(dt);
@@ -200,6 +204,10 @@ void Application::Render() {
     if (SDL_MUSTLOCK(m_screen)) {
         SDL_UnlockSurface(m_screen);
     }
+}
+
+void Application::DispatchOnMainThread(std::function<void()> cb) {
+    Async::DispatchOnMainThread(std::move(cb));
 }
 
 void Application::Shutdown() {

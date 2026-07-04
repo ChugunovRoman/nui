@@ -75,6 +75,7 @@ set(NUI_SOURCES
     # Core
     src/core/application.cpp
     src/core/input.cpp
+    src/core/async.cpp
 
     # Renderer
     src/renderer/canvas.cpp

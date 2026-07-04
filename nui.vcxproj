@@ -177,6 +177,7 @@
   <ItemGroup>
     <ClCompile Include="src\core\application.cpp" />
     <ClCompile Include="src\core\input.cpp" />
+    <ClCompile Include="src\core\async.cpp" />
     <ClCompile Include="src\renderer\canvas.cpp" />
     <ClCompile Include="src\renderer\texture.cpp" />
     <ClCompile Include="src\renderer\font.cpp" />
@@ -196,6 +197,7 @@
   <ItemGroup>
     <ClInclude Include="src\core\application.h" />
     <ClInclude Include="src\core\input.h" />
+    <ClInclude Include="src\core\async.h" />
     <ClInclude Include="src\renderer\canvas.h" />
     <ClInclude Include="src\renderer\color.h" />
     <ClInclude Include="src\renderer\texture.h" />

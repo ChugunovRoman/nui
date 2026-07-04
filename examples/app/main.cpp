@@ -20,10 +20,13 @@
 #include "ui/scrollview.h"
 #include "xml/layout_loader.h"
 #include "renderer/resource.h"
+#include "core/async.h"
 
 #include <cstdio>
 #include <cmath>
 #include <cstring>
+#include <thread>
+#include <chrono>
 #include "core/log.h"
 
 #ifdef _WIN32
@@ -108,6 +111,45 @@ std::unique_ptr<nui::Widget> BuildHelloWorldUI(nui::FontManager& fonts,
     });
     root->AddChild(std::move(btnPlay));
 
+    // Async demo button
+    auto btnAsync = std::make_unique<Button>();
+    btnAsync->SetName("btn_async");
+    btnAsync->SetRect(40, 240, 160, 40);
+    btnAsync->SetText("Async Task");
+    btnAsync->SetFontSize(15);
+    btnAsync->SetBgColor(Color(120, 60, 160, 255));
+    btnAsync->SetHoverColor(Color(145, 80, 190, 255));
+    btnAsync->SetPressedColor(Color(100, 45, 140, 255));
+    btnAsync->SetOnClick([](Widget*) {
+        NUI_LOG("[Example] Async task started...\n");
+
+        // Find status label and update it
+        Widget* root = GetApp()->GetRoot();
+        Label* status = static_cast<Label*>(root->GetChild("async_status"));
+        if (status) status->SetText("Working...");
+
+        // Run heavy task on background thread
+        Async::Run([]() -> std::string {
+            // Simulate 5-second heavy work (does NOT block UI)
+            std::this_thread::sleep_for(std::chrono::seconds(5));
+            return "Async done! Result: 42";
+        })->Then([status](const std::string& result) {
+            // This runs on main thread — safe to update UI
+            NUI_LOG("[Example] %s\n", result.c_str());
+            if (status) status->SetText(result);
+        });
+    });
+    root->AddChild(std::move(btnAsync));
+
+    // Status label for async demo
+    auto asyncStatus = std::make_unique<Label>();
+    asyncStatus->SetName("async_status");
+    asyncStatus->SetRect(40, 290, 330, 20);
+    asyncStatus->SetText("Click \"Async Task\" to test (5s delay)");
+    asyncStatus->SetFontSize(13);
+    asyncStatus->SetTextColor(Color(180, 140, 220, 255));
+    root->AddChild(std::move(asyncStatus));
+
     // Red danger button
     auto btnQuit = std::make_unique<Button>();
     btnQuit->SetName("btn_quit");
@@ -132,7 +174,7 @@ std::unique_ptr<nui::Widget> BuildHelloWorldUI(nui::FontManager& fonts,
 
     // -- EditBox examples --
     auto editHeader = std::make_unique<Label>();
-    editHeader->SetRect(40, 240, 340, 22);
+    editHeader->SetRect(40, 330, 340, 22);
     editHeader->SetText("Text Input");
     editHeader->SetFontSize(16);
     editHeader->SetTextColor(Color(170, 180, 210, 255));
@@ -140,7 +182,7 @@ std::unique_ptr<nui::Widget> BuildHelloWorldUI(nui::FontManager& fonts,
 
     auto editName = std::make_unique<EditBox>();
     editName->SetName("edit_name");
-    editName->SetRect(40, 270, 330, 32);
+    editName->SetRect(40, 360, 330, 32);
     editName->SetPlaceholder("Enter your name...");
     editName->SetFontSize(14);
     editName->SetOnTextChanged([](EditBox* eb, const std::string& text) {
@@ -150,7 +192,7 @@ std::unique_ptr<nui::Widget> BuildHelloWorldUI(nui::FontManager& fonts,
 
     auto editPassword = std::make_unique<EditBox>();
     editPassword->SetName("edit_password");
-    editPassword->SetRect(40, 310, 330, 32);
+    editPassword->SetRect(40, 400, 330, 32);
     editPassword->SetPlaceholder("Password...");
     editPassword->SetFontSize(14);
     editPassword->SetPasswordMode(true);
@@ -158,7 +200,7 @@ std::unique_ptr<nui::Widget> BuildHelloWorldUI(nui::FontManager& fonts,
 
     // -- ProgressBar examples --
     auto progressHeader = std::make_unique<Label>();
-    progressHeader->SetRect(40, 360, 340, 22);
+    progressHeader->SetRect(40, 450, 340, 22);
     progressHeader->SetText("Progress Bars");
     progressHeader->SetFontSize(16);
     progressHeader->SetTextColor(Color(170, 180, 210, 255));
@@ -166,7 +208,7 @@ std::unique_ptr<nui::Widget> BuildHelloWorldUI(nui::FontManager& fonts,
 
     auto progressBlue = std::make_unique<ProgressBar>();
     progressBlue->SetName("progress_blue");
-    progressBlue->SetRect(40, 390, 330, 24);
+    progressBlue->SetRect(40, 480, 330, 24);
     progressBlue->SetValue(0.45f);
     progressBlue->SetShowPercent(true);
     progressBlue->SetFillColor(Color(40, 120, 200, 255));
@@ -175,7 +217,7 @@ std::unique_ptr<nui::Widget> BuildHelloWorldUI(nui::FontManager& fonts,
 
     auto progressGreen = std::make_unique<ProgressBar>();
     progressGreen->SetName("progress_green");
-    progressGreen->SetRect(40, 420, 330, 24);
+    progressGreen->SetRect(40, 510, 330, 24);
     progressGreen->SetValue(0.78f);
     progressGreen->SetLabel("78 / 100 items");
     progressGreen->SetFillColor(Color(40, 160, 60, 255));
@@ -184,7 +226,7 @@ std::unique_ptr<nui::Widget> BuildHelloWorldUI(nui::FontManager& fonts,
 
     auto progressYellow = std::make_unique<ProgressBar>();
     progressYellow->SetName("progress_yellow");
-    progressYellow->SetRect(40, 450, 330, 24);
+    progressYellow->SetRect(40, 540, 330, 24);
     progressYellow->SetValue(0.15f);
     progressYellow->SetFillColor(Color(200, 170, 30, 255));
     progressYellow->SetBorderColor(Color(60, 60, 80, 255));

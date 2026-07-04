@@ -58,6 +58,9 @@ public:
     // Exit the main loop
     void Quit() { m_running = false; }
 
+    // Async: dispatch a callback to run on the main thread next frame
+    static void DispatchOnMainThread(std::function<void()> cb);
+
 private:
     void ProcessEvents();
     void Render();
