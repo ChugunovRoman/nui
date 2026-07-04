@@ -1,0 +1,26 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.ncb
+*.sdf
+*.opensdf
+
+# Build output
+bin/
+obj/
+build/
+out/
+
+# vcpkg (installed by setup.bat)
+vcpkg/
+
+# Downloaded headers
+src/renderer/stb_image.h
+
+# Generated embedded resources (built by embed_resources.py)
+src/generated/
+
+# OS files
+Thumbs.db
+.DS_Store

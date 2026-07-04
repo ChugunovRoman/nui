@@ -1,0 +1,117 @@
+name: Build
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  # ── Build library (compile check) ─────────────────────────────
+  build:
+    name: ${{ matrix.os.name }} ${{ matrix.config }}
+    runs-on: ${{ matrix.os.runner }}
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - { name: Windows, runner: windows-latest }
+          - { name: Linux,   runner: ubuntu-latest  }
+          - { name: macOS,   runner: macos-latest   }
+        config: [Release]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Linux dependencies
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libsdl2-dev libsdl2-ttf-dev libpugixml-dev
+
+    - name: Install macOS dependencies
+      if: runner.os == 'macOS'
+      run: brew install sdl2 sdl2_ttf pugixml
+
+    - name: Configure (CMake)
+      run: cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.config }}
+
+    - name: Build
+      run: cmake --build build --config ${{ matrix.config }} -j$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)
+
+  # ── Build example-app with artifacts ──────────────────────────
+  release:
+    name: Release ${{ matrix.os.name }}
+    runs-on: ${{ matrix.os.runner }}
+    needs: build
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - { name: Windows, runner: windows-latest, artifact: windows-x64 }
+          - { name: Linux,   runner: ubuntu-latest,  artifact: linux-amd64 }
+          - { name: macOS,   runner: macos-latest,   artifact: macos-arm64 }
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Linux dependencies
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libsdl2-dev libsdl2-ttf-dev libpugixml-dev
+
+    - name: Install macOS dependencies
+      if: runner.os == 'macOS'
+      run: brew install sdl2 sdl2_ttf pugixml
+
+    - name: Install Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    - name: Embed resources
+      run: python tools/embed_resources.py examples/app/resources src/generated resources
+
+    - name: Configure (CMake)
+      run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+    - name: Build example-app
+      run: cmake --build build --config Release --target nui-example -j$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)
+
+    - name: Prepare artifact (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        $dir = "nui-${{ matrix.os.artifact }}"
+        New-Item -ItemType Directory -Path $dir -Force
+        Copy-Item build/bin/Release/nui-example.exe "$dir/"
+        Compress-Archive -Path $dir -DestinationPath "$dir.zip"
+
+    - name: Prepare artifact (Linux/macOS)
+      if: runner.os != 'Windows'
+      run: |
+        DIR="nui-${{ matrix.os.artifact }}"
+        mkdir -p "$DIR"
+        cp build/bin/nui-example "$DIR/"
+        tar czf "$DIR.tar.gz" "$DIR"
+
+    - name: Upload artifact (Windows)
+      if: runner.os == 'Windows'
+      uses: actions/upload-artifact@v4
+      with:
+        name: nui-${{ matrix.os.artifact }}
+        path: nui-${{ matrix.os.artifact }}.zip
+
+    - name: Upload artifact (Linux/macOS)
+      if: runner.os != 'Windows'
+      uses: actions/upload-artifact@v4
+      with:
+        name: nui-${{ matrix.os.artifact }}
+        path: nui-${{ matrix.os.artifact }}.tar.gz

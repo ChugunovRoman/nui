@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  NUI: Example XML layout
+  Demonstrates every supported widget type.
+  Place this file at: resources/layouts/example.xml
+-->
+<layout name="hello_world" x="0" y="0" width="800" height="768" bg_color="18,18,28">
+
+    <!-- ── Title ───────────────────────────────────────────────── -->
+    <label name="title" x="0" y="10" width="800" height="40"
+           text="NUI  ·  Hello World"
+           font_size="28" text_color="200,210,255"
+           align_h="center" align_v="center"/>
+
+    <label x="0" y="50" width="800" height="24"
+           text="Every supported widget shown below — all rendered on CPU"
+           font_size="13" text_color="120,130,160"
+           align_h="center"/>
+
+    <!-- Separator -->
+    <panel x="40" y="82" width="720" height="1" bg_color="60,60,80"/>
+
+    <!-- ── Left column: Buttons ────────────────────────────────── -->
+    <label x="40" y="100" width="340" height="22"
+           text="Buttons" font_size="16" text_color="170,180,210"/>
+
+    <button name="btn_hello" x="40" y="130" width="160" height="40"
+            text="Say Hello" font_size="15"
+            bg_color="40,90,160" hover_color="55,110,190" pressed_color="30,70,130"/>
+
+    <button name="btn_play" x="210" y="130" width="160" height="40"
+            text="▶  Play" font_size="15"
+            bg_color="35,130,50" hover_color="45,155,60" pressed_color="25,100,35"/>
+
+    <button name="btn_quit" x="40" y="180" width="160" height="40"
+            text="Quit" font_size="15"
+            bg_color="150,35,35" hover_color="180,50,50" pressed_color="120,25,25"/>
+
+    <button name="btn_disabled" x="210" y="180" width="160" height="40"
+            text="Disabled" font_size="15" enabled="false"/>
+
+    <!-- ── Left column: Text Input ─────────────────────────────── -->
+    <label x="40" y="240" width="340" height="22"
+           text="Text Input" font_size="16" text_color="170,180,210"/>
+
+    <editbox name="edit_name" x="40" y="270" width="330" height="32"
+             placeholder="Enter your name..." font_size="14"/>
+
+    <editbox name="edit_password" x="40" y="310" width="330" height="32"
+             placeholder="Password..." font_size="14" password="true"/>
+
+    <!-- ── Left column: Progress Bars ──────────────────────────── -->
+    <label x="40" y="360" width="340" height="22"
+           text="Progress Bars" font_size="16" text_color="170,180,210"/>
+
+    <progressbar name="progress_blue" x="40" y="390" width="330" height="24"
+                 value="0.45" show_percent="true"
+                 fill_color="40,120,200" border_color="60,60,80"/>
+
+    <progressbar name="progress_green" x="40" y="420" width="330" height="24"
+                 value="0.78" label="78 / 100 items"
+                 fill_color="40,160,60" border_color="60,60,80"/>
+
+    <progressbar name="progress_yellow" x="40" y="450" width="330" height="24"
+                 value="0.15"
+                 fill_color="200,170,30" border_color="60,60,80"/>
+
+    <!-- ── Right column: Image ─────────────────────────────────── -->
+    <label x="420" y="100" width="340" height="22"
+           text="Image (Fit mode)" font_size="16" text_color="170,180,210"/>
+
+    <image name="demo_image" x="420" y="130" width="340" height="200"
+           src="resources/images/cover.png" scale="fit"
+           border_color="60,60,80"/>
+
+    <!-- ── Right column: Word-Wrapped Text ─────────────────────── -->
+    <label x="420" y="345" width="340" height="22"
+           text="Word-Wrapped Text" font_size="16" text_color="170,180,210"/>
+
+    <label x="420" y="375" width="340" height="100"
+           text="This label demonstrates automatic word wrapping. Long text is split across multiple lines to fit inside the widget bounds."
+           font_size="13" text_color="180,180,200"
+           word_wrap="true" bg_color="30,30,42" border_color="50,50,65"/>
+
+    <!-- ── Right column: Scroll View ───────────────────────────── -->
+    <label x="420" y="490" width="340" height="22"
+           text="Scroll View" font_size="16" text_color="170,180,210"/>
+
+    <scrollview name="scroll_news" x="420" y="518" width="340" height="220"
+                border_color="60,60,80">
+        <panel x="8" y="8" width="320" height="36" bg_color="32,32,46" border_color="48,48,62">
+            <label x="8" y="8" width="300" height="20"
+                   text="Welcome to NUI!" font_size="12" text_color="190,195,215"/>
+        </panel>
+        <panel x="8" y="50" width="320" height="36" bg_color="32,32,46" border_color="48,48,62">
+            <label x="8" y="8" width="300" height="20"
+                   text="CPU-only rendering — no GPU needed" font_size="12" text_color="190,195,215"/>
+        </panel>
+        <panel x="8" y="92" width="320" height="36" bg_color="32,32,46" border_color="48,48,62">
+            <label x="8" y="8" width="300" height="20"
+                   text="SDL2 software renderer under the hood" font_size="12" text_color="190,195,215"/>
+        </panel>
+        <panel x="8" y="134" width="320" height="36" bg_color="32,32,46" border_color="48,48,62">
+            <label x="8" y="8" width="300" height="20"
+                   text="XML layouts like xrUICore" font_size="12" text_color="190,195,215"/>
+        </panel>
+        <panel x="8" y="176" width="320" height="36" bg_color="32,32,46" border_color="48,48,62">
+            <label x="8" y="8" width="300" height="20"
+                   text="Image support: PNG, JPG, BMP, TGA, GIF" font_size="12" text_color="190,195,215"/>
+        </panel>
+        <panel x="8" y="218" width="320" height="36" bg_color="32,32,46" border_color="48,48,62">
+            <label x="8" y="8" width="300" height="20"
+                   text="FreeType fonts with anti-aliasing" font_size="12" text_color="190,195,215"/>
+        </panel>
+        <panel x="8" y="260" width="320" height="36" bg_color="32,32,46" border_color="48,48,62">
+            <label x="8" y="8" width="300" height="20"
+                   text="Single self-contained binary" font_size="12" text_color="190,195,215"/>
+        </panel>
+        <panel x="8" y="302" width="320" height="36" bg_color="32,32,46" border_color="48,48,62">
+            <label x="8" y="8" width="300" height="20"
+                   text="Cross-platform: Windows, Linux, macOS" font_size="12" text_color="190,195,215"/>
+        </panel>
+    </scrollview>
+
+    <!-- ── Footer ──────────────────────────────────────────────── -->
+    <panel x="0" y="740" width="800" height="28" bg_color="25,25,38"/>
+    <label x="0" y="744" width="800" height="20"
+           text="Click &quot;Say Hello&quot; to see console output  ·  Click &quot;Quit&quot; or close window to exit"
+           font_size="11" text_color="100,100,120" align_h="center"/>
+
+</layout>
