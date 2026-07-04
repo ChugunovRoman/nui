@@ -7,40 +7,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # ── Output directory ──────────────────────────────────────────────
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-# ── Dependencies via FetchContent ────────────────────────────────
-include(FetchContent)
-
-# SDL2
-FetchContent_Declare(
-    SDL2
-    GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-    GIT_TAG        release-2.30.12
-    GIT_SHALLOW    TRUE
-)
+# ── Dependencies (git submodules in Externals/) ─────────────────
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(SDL2_DISABLE_INSTALL ON CACHE BOOL "" FORCE)
 set(SDL2_DISABLE_UNINSTALL ON CACHE BOOL "" FORCE)
-
-# SDL_ttf (wraps FreeType)
-FetchContent_Declare(
-    SDL_ttf
-    GIT_REPOSITORY https://github.com/libsdl-org/SDL_ttf.git
-    GIT_TAG        release-2.22.0
-    GIT_SHALLOW    TRUE
-)
 set(SDL2TTF_INSTALL OFF CACHE BOOL "" FORCE)
 
-# pugixml (XML parser)
-FetchContent_Declare(
-    pugixml
-    GIT_REPOSITORY https://github.com/zeux/pugixml.git
-    GIT_TAG        v1.14
-    GIT_SHALLOW    TRUE
-)
-
-FetchContent_MakeAvailable(SDL2 SDL_ttf pugixml)
+add_subdirectory(Externals/SDL2 EXCLUDE_FROM_ALL)
+add_subdirectory(Externals/SDL_ttf EXCLUDE_FROM_ALL)
+add_subdirectory(Externals/pugixml EXCLUDE_FROM_ALL)
 
 # ── stb_image (header-only, bundled) ────────────────────────────
-# Download stb_image.h if not present
 if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/src/renderer/stb_image.h)
     file(DOWNLOAD
         https://raw.githubusercontent.com/nothings/stb/master/stb_image.h
@@ -103,11 +80,13 @@ set(NUI_SOURCES
 )
 
 # ── Executable ───────────────────────────────────────────────────
-add_executable(${PROJECT_NAME} ${NUI_SOURCES})
+add_executable(${PROJECT_NAME} WIN32 ${NUI_SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${NUI_GENERATED_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/Externals/SDL2/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/Externals/SDL_ttf
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
@@ -130,20 +109,3 @@ endif()
 
 # ── Example app ────────────────────────────────────────────────
 add_subdirectory(examples/app)
-
-# stb_image implementation (compiled in one .cpp file)
-target_compile_definitions(${PROJECT_NAME} PRIVATE
-    STB_IMAGE_IMPLEMENTATION_IN_SOURCE
-)
-
-# ── Copy resources to build directory ────────────────────────────
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_CURRENT_SOURCE_DIR}/resources
-        $<TARGET_FILE_DIR:${PROJECT_NAME}>/resources
-    COMMENT "Copying resources to output directory"
-)
-
-# ── Install ──────────────────────────────────────────────────────
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
-install(DIRECTORY resources/ DESTINATION bin/resources)

@@ -1,63 +1,52 @@
 @echo off
 REM ──────────────────────────────────────────────────────────────
-REM  NUI: Visual Studio Setup Script
-REM  Downloads vcpkg, installs dependencies, downloads stb_image.
-REM  Run this once before opening the .sln in Visual Studio.
+REM  NUI: First-time setup
+REM  Initializes submodules and checks out correct tags.
+REM  After this, just open nui.sln and build.
 REM ──────────────────────────────────────────────────────────────
-setlocal enabledelayedexpansion
+setlocal
 
 set SCRIPT_DIR=%~dp0
 
 echo ============================================
-echo   NUI - Visual Studio Setup
+echo   NUI - First-time Setup
 echo ============================================
 echo.
 
-REM ── Step 1: Clone or update vcpkg ─────────────────────────────
-if exist "%SCRIPT_DIR%vcpkg\vcpkg.exe" (
-    echo [1/3] vcpkg already installed, updating...
-    cd /d "%SCRIPT_DIR%vcpkg"
-    git pull >nul 2>&1
-    call bootstrap-vcpkg.bat -disableMetrics
-) else (
-    echo [1/3] Cloning vcpkg...
-    git clone https://github.com/microsoft/vcpkg.git "%SCRIPT_DIR%vcpkg"
-    if errorlevel 1 (
-        echo ERROR: Failed to clone vcpkg. Is git installed?
-        exit /b 1
-    )
-    cd /d "%SCRIPT_DIR%vcpkg"
-    call bootstrap-vcpkg.bat -disableMetrics
-    if errorlevel 1 (
-        echo ERROR: Failed to bootstrap vcpkg.
-        exit /b 1
-    )
-)
-
-REM ── Step 2: Install dependencies ──────────────────────────────
-echo.
-echo [2/3] Installing dependencies (SDL2, SDL2-ttf, pugixml)...
-echo       This may take several minutes on first run.
-echo.
-"%SCRIPT_DIR%vcpkg\vcpkg.exe" install --triplet x64-windows-static --triplet x86-windows-static --x-manifest-root="%SCRIPT_DIR%" --x-install-root="%SCRIPT_DIR%vcpkg\installed"
+REM ── Step 1: Init submodules ───────────────────────────────────
+echo [1/3] Initializing git submodules...
+cd /d "%SCRIPT_DIR%"
+git submodule update --init --recursive
 if errorlevel 1 (
-    echo ERROR: vcpkg install failed.
+    echo ERROR: git submodule init failed.
     exit /b 1
 )
 
+REM ── Step 2: Checkout release tags ─────────────────────────────
+echo.
+echo [2/3] Checking out release tags...
+cd /d "%SCRIPT_DIR%Externals\SDL2"
+git fetch --depth 1 origin tag release-2.30.12 2>nul
+git checkout release-2.30.12 2>nul
+
+cd /d "%SCRIPT_DIR%Externals\SDL_ttf"
+git fetch --depth 1 origin tag release-2.22.0 2>nul
+git checkout release-2.22.0 2>nul
+
+cd /d "%SCRIPT_DIR%Externals\pugixml"
+git fetch --depth 1 origin tag v1.14 2>nul
+git checkout v1.14 2>nul
+
+cd /d "%SCRIPT_DIR%"
+
 REM ── Step 3: Download stb_image.h ──────────────────────────────
 echo.
-echo [3/3] Downloading stb_image.h...
+echo [3/3] Checking stb_image.h...
 if not exist "%SCRIPT_DIR%src\renderer\stb_image.h" (
     powershell -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/nothings/stb/master/stb_image.h' -OutFile '%SCRIPT_DIR%src\renderer\stb_image.h'"
-    if errorlevel 1 (
-        echo WARNING: Failed to download stb_image.h. Download manually from:
-        echo   https://github.com/nothings/stb/blob/master/stb_image.h
-    ) else (
-        echo       stb_image.h downloaded successfully.
-    )
+    echo       Downloaded.
 ) else (
-    echo       stb_image.h already exists.
+    echo       Already exists.
 )
 
 echo.
@@ -65,10 +54,9 @@ echo ============================================
 echo   Setup complete!
 echo.
 echo   Open nui.sln in Visual Studio
-echo   and build (Release x64 recommended).
+echo   Select Release ^| x64 and build.
 echo.
-echo   Make sure VCPKG_ROOT is NOT set globally
-echo   or the local vcpkg will be used via
-echo   MSBuild integration in the .vcxproj files.
+echo   First build will run CMake to configure
+echo   dependencies. Subsequent builds are fast.
 echo ============================================
 pause

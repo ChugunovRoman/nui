@@ -67,15 +67,6 @@
 
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
 
-  <!-- ── vcpkg integration ─────────────────────────────────────── -->
-  <PropertyGroup Label="Vcpkg">
-    <VcpkgEnableManifest>true</VcpkgEnableManifest>
-    <VcpkgManifestRoot>$(MSBuildThisFileDirectory)</VcpkgManifestRoot>
-    <VcpkgInstalledDirectory>$(MSBuildThisFileDirectory)vcpkg\installed</VcpkgInstalledDirectory>
-    <VcpkgTriplet Condition="'$(Platform)'=='x64'">x64-windows-static</VcpkgTriplet>
-    <VcpkgTriplet Condition="'$(Platform)'=='Win32'">x86-windows-static</VcpkgTriplet>
-    <VcpkgConfiguration>$(Configuration)</VcpkgConfiguration>
-  </PropertyGroup>
 
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -128,7 +119,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)src\generated;$(MSBuildThisFileDirectory)vcpkg\installed\$(VcpkgTriplet)\include;$(MSBuildThisFileDirectory)vcpkg\installed\$(VcpkgTriplet)\include\SDL2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)src\generated;$(MSBuildThisFileDirectory)Externals\SDL2\include;$(MSBuildThisFileDirectory)Externals\SDL_ttf;$(MSBuildThisFileDirectory)Externals\pugixml\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
   </ItemDefinitionGroup>
@@ -142,7 +133,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)src\generated;$(MSBuildThisFileDirectory)vcpkg\installed\$(VcpkgTriplet)\include;$(MSBuildThisFileDirectory)vcpkg\installed\$(VcpkgTriplet)\include\SDL2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)src\generated;$(MSBuildThisFileDirectory)Externals\SDL2\include;$(MSBuildThisFileDirectory)Externals\SDL_ttf;$(MSBuildThisFileDirectory)Externals\pugixml\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
   </ItemDefinitionGroup>
@@ -154,7 +145,7 @@
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)src\generated;$(MSBuildThisFileDirectory)vcpkg\installed\$(VcpkgTriplet)\include;$(MSBuildThisFileDirectory)vcpkg\installed\$(VcpkgTriplet)\include\SDL2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)src\generated;$(MSBuildThisFileDirectory)Externals\SDL2\include;$(MSBuildThisFileDirectory)Externals\SDL_ttf;$(MSBuildThisFileDirectory)Externals\pugixml\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
   </ItemDefinitionGroup>
@@ -168,7 +159,7 @@
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)src\generated;$(MSBuildThisFileDirectory)vcpkg\installed\$(VcpkgTriplet)\include;$(MSBuildThisFileDirectory)vcpkg\installed\$(VcpkgTriplet)\include\SDL2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)src\generated;$(MSBuildThisFileDirectory)Externals\SDL2\include;$(MSBuildThisFileDirectory)Externals\SDL_ttf;$(MSBuildThisFileDirectory)Externals\pugixml\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
   </ItemDefinitionGroup>
@@ -221,10 +212,11 @@
   </ImportGroup>
 
   <!-- ── Pre-build: embed resources ──────────────────────────── -->
+  <!-- ── Pre-build: embed resources ──────── -->
   <ItemDefinitionGroup>
     <PreBuildEvent>
       <Command>python "$(ProjectDir)tools\embed_resources.py" "$(ProjectDir)examples\app\resources" "$(ProjectDir)src\generated" "resources"</Command>
-      <Message>Embedding resources into binary...</Message>
+      <Message>Embedding resources...</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
 

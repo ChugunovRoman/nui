@@ -7,35 +7,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # ── Locate the library sources ───────────────────────────────────
 set(NUI_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../src)
-
-# ── Dependencies (same as library) ──────────────────────────────
-include(FetchContent)
-
-FetchContent_Declare(
-    SDL2
-    GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-    GIT_TAG        release-2.30.12
-    GIT_SHALLOW    TRUE
-)
-set(SDL2_DISABLE_INSTALL ON CACHE BOOL "" FORCE)
-set(SDL2_DISABLE_UNINSTALL ON CACHE BOOL "" FORCE)
-
-FetchContent_Declare(
-    SDL_ttf
-    GIT_REPOSITORY https://github.com/libsdl-org/SDL_ttf.git
-    GIT_TAG        release-2.22.0
-    GIT_SHALLOW    TRUE
-)
-set(SDL2TTF_INSTALL OFF CACHE BOOL "" FORCE)
-
-FetchContent_Declare(
-    pugixml
-    GIT_REPOSITORY https://github.com/zeux/pugixml.git
-    GIT_TAG        v1.14
-    GIT_SHALLOW    TRUE
-)
-
-FetchContent_MakeAvailable(SDL2 SDL_ttf pugixml)
+set(NUI_EXTERNALS ${CMAKE_CURRENT_SOURCE_DIR}/../../Externals)
 
 # ── stb_image (download if missing) ─────────────────────────────
 if(NOT EXISTS ${NUI_ROOT}/renderer/stb_image.h)
@@ -68,13 +40,16 @@ set(EXAMPLE_SOURCES
     ${NUI_ROOT}/xml/layout_loader.cpp
 )
 
-add_executable(${PROJECT_NAME} ${EXAMPLE_SOURCES})
+add_executable(${PROJECT_NAME} WIN32 ${EXAMPLE_SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${NUI_ROOT}
     ${NUI_ROOT}/../src/generated
+    ${NUI_EXTERNALS}/SDL2/include
+    ${NUI_EXTERNALS}/SDL_ttf
 )
 
+# Dependencies are already built by the root CMakeLists.txt
 target_link_libraries(${PROJECT_NAME} PRIVATE
     SDL2::SDL2main
     SDL2::SDL2-static
@@ -87,19 +62,3 @@ if(WIN32)
 elseif(UNIX AND NOT APPLE)
     target_link_libraries(${PROJECT_NAME} PRIVATE dl pthread m)
 endif()
-
-# Copy library resources next to the binary
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../resources
-        $<TARGET_FILE_DIR:${PROJECT_NAME}>/resources
-    COMMENT "Copying library resources"
-)
-
-# Also copy example-specific layout.xml into resources/layouts/
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_CURRENT_SOURCE_DIR}/layout.xml
-        $<TARGET_FILE_DIR:${PROJECT_NAME}>/resources/layouts/example.xml
-    COMMENT "Copying example layout"
-)

@@ -1,0 +1,9 @@
+[submodule "Externals/SDL_ttf"]
+	path = Externals/SDL_ttf
+	url = https://github.com/libsdl-org/SDL_ttf.git
+[submodule "Externals/pugixml"]
+	path = Externals/pugixml
+	url = https://github.com/zeux/pugixml.git
+[submodule "Externals/SDL2"]
+	path = Externals/SDL2
+	url = https://github.com/libsdl-org/SDL.git

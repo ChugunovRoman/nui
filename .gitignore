@@ -12,9 +12,6 @@ obj/
 build/
 out/
 
-# vcpkg (installed by setup.bat)
-vcpkg/
-
 # Downloaded headers
 src/renderer/stb_image.h
 
