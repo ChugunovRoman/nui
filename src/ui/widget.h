@@ -57,6 +57,7 @@ public:
     void SetColor(const Color& c) { m_color = c; }
     const Color& GetColor() const { return m_color; }
     void SetBgColor(const Color& c) { m_bgColor = c; }
+    const Color& GetBgColor() const { return m_bgColor; }
     void SetBorderColor(const Color& c) { m_borderColor = c; }
 
     // ── Parent / Child tree ─────────────────────────────────────

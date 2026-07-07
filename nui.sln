@@ -17,6 +17,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nui", "nui.vcxproj", "{A1B2
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "example-app", "examples\app\example-app.vcxproj", "{B2C3D4E5-2222-3333-4444-555566667777}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nui-animations", "examples\animations\nui-animations.vcxproj", "{C3D4E5F6-3333-4444-5555-666677778888}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -81,6 +83,14 @@ Global
 		{B2C3D4E5-2222-3333-4444-555566667777}.Release|Win32.Build.0 = Release|Win32
 		{B2C3D4E5-2222-3333-4444-555566667777}.Release|x64.ActiveCfg = Release|x64
 		{B2C3D4E5-2222-3333-4444-555566667777}.Release|x64.Build.0 = Release|x64
+		{C3D4E5F6-3333-4444-5555-666677778888}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C3D4E5F6-3333-4444-5555-666677778888}.Debug|Win32.Build.0 = Debug|Win32
+		{C3D4E5F6-3333-4444-5555-666677778888}.Debug|x64.ActiveCfg = Debug|x64
+		{C3D4E5F6-3333-4444-5555-666677778888}.Debug|x64.Build.0 = Debug|x64
+		{C3D4E5F6-3333-4444-5555-666677778888}.Release|Win32.ActiveCfg = Release|Win32
+		{C3D4E5F6-3333-4444-5555-666677778888}.Release|Win32.Build.0 = Release|Win32
+		{C3D4E5F6-3333-4444-5555-666677778888}.Release|x64.ActiveCfg = Release|x64
+		{C3D4E5F6-3333-4444-5555-666677778888}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

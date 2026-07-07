@@ -5,6 +5,7 @@
 #include "core/application.h"
 #include "core/input.h"
 #include "core/async.h"
+#include "animation/animator.h"
 #include "renderer/canvas.h"
 #include "renderer/font.h"
 #include "ui/widget.h"
@@ -113,6 +114,9 @@ int Application::Run() {
 
         // Process async callbacks from background threads
         Async::ProcessMainThreadQueue();
+
+        // Update all active animations
+        Animator::UpdateAll(dt);
 
         // Update and render UI tree
         if (m_root) {

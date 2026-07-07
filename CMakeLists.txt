@@ -80,6 +80,10 @@ set(NUI_SOURCES
     src/renderer/font.cpp
     src/renderer/resource.cpp
 
+    # Animation
+    src/animation/tween.cpp
+    src/animation/animator.cpp
+
     # UI widgets
     src/ui/widget.cpp
     src/ui/label.cpp
@@ -127,5 +131,6 @@ elseif(UNIX AND NOT APPLE)
     )
 endif()
 
-# ── Example app ────────────────────────────────────────────────
+# ── Example apps ───────────────────────────────────────────────
 add_subdirectory(examples/app)
+add_subdirectory(examples/animations)

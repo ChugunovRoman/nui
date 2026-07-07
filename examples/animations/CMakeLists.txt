@@ -1,20 +1,17 @@
 cmake_minimum_required(VERSION 3.16)
-project(nui-example LANGUAGES CXX)
+project(nui-animations LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-# Static CRT on MSVC
 if(MSVC)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
 
-# ── Locate the library sources ───────────────────────────────────
 set(NUI_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../src)
 set(NUI_EXTERNALS ${CMAKE_CURRENT_SOURCE_DIR}/../../Externals)
 
-# ── stb_image (download if missing) ─────────────────────────────
 if(NOT EXISTS ${NUI_ROOT}/renderer/stb_image.h)
     file(DOWNLOAD
         https://raw.githubusercontent.com/nothings/stb/master/stb_image.h
@@ -22,7 +19,6 @@ if(NOT EXISTS ${NUI_ROOT}/renderer/stb_image.h)
     )
 endif()
 
-# ── Sources ──────────────────────────────────────────────────────
 set(EXAMPLE_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
 
@@ -54,9 +50,9 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${NUI_ROOT}/../src/generated
     ${NUI_EXTERNALS}/SDL2/include
     ${NUI_EXTERNALS}/SDL_ttf
+    ${NUI_EXTERNALS}/pugixml/src
 )
 
-# Dependencies are already built by the root CMakeLists.txt
 target_link_libraries(${PROJECT_NAME} PRIVATE
     SDL2::SDL2main
     SDL2::SDL2-static

@@ -267,6 +267,10 @@ python tools/embed_resources.py resources/ src/generated/ resources
 | FLTK | ~1-3 МБ | ✅ | ✅ | ✅ |
 | Dear ImGui + SW | ~1-3 МБ | ✅ | ✅ | ✅ |
 
+## Roadmap
+
+Планы развития проекта: [roadmap.md](roadmap.md)
+
 ## Лицензия
 
 MIT License — см. [LICENSE](LICENSE)

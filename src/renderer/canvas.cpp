@@ -87,9 +87,44 @@ bool Canvas::ClipRect(SDL_Rect& r) const {
 
 void Canvas::FillRect(const Rect& rect, const Color& color) {
     if (!m_surface) return;
-    SDL_Rect r = {rect.x, rect.y, rect.w, rect.h};
-    Uint32 c = SDL_MapRGBA(m_surface->format, color.r, color.g, color.b, color.a);
-    SDL_FillRect(m_surface, &r, c);
+    if (color.a == 0) return;
+
+    if (color.a == 255) {
+        // Opaque — fast path
+        SDL_Rect r = {rect.x, rect.y, rect.w, rect.h};
+        Uint32 c = SDL_MapRGBA(m_surface->format, color.r, color.g, color.b, 255);
+        SDL_FillRect(m_surface, &r, c);
+        return;
+    }
+
+    // Semi-transparent — blit a colored surface with alpha blending
+    SDL_Rect sr = {0, 0, rect.w, rect.h};
+    SDL_Rect dr = {rect.x, rect.y, rect.w, rect.h};
+
+    // Clip to surface bounds
+    if (dr.x < 0) { sr.x -= dr.x; sr.w += dr.x; dr.x = 0; }
+    if (dr.y < 0) { sr.y -= dr.y; sr.h += dr.y; dr.y = 0; }
+    if (dr.x + dr.w > m_surface->w) { int diff = dr.x + dr.w - m_surface->w; sr.w -= diff; dr.w -= diff; }
+    if (dr.y + dr.h > m_surface->h) { int diff = dr.y + dr.h - m_surface->h; sr.h -= diff; dr.h -= diff; }
+    if (sr.w <= 0 || sr.h <= 0) return;
+
+    // Create a temporary surface with the fill color
+    SDL_Surface* tmp = SDL_CreateRGBSurface(0, sr.w, sr.h, 32,
+        m_surface->format->Rmask, m_surface->format->Gmask,
+        m_surface->format->Bmask, m_surface->format->Amask);
+    if (!tmp) return;
+
+    // Fill with the color (opaque)
+    Uint32 c = SDL_MapRGBA(tmp->format, color.r, color.g, color.b, 255);
+    SDL_FillRect(tmp, nullptr, c);
+
+    // Set alpha on the entire surface
+    SDL_SetSurfaceAlphaMod(tmp, color.a);
+    SDL_SetSurfaceBlendMode(tmp, SDL_BLENDMODE_BLEND);
+
+    // Blit with alpha blending
+    SDL_BlitSurface(tmp, &sr, m_surface, &dr);
+    SDL_FreeSurface(tmp);
 }
 
 void Canvas::DrawRect(const Rect& rect, const Color& color) {

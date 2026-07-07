@@ -16,6 +16,9 @@
     <Filter Include="src\xml">
       <UniqueIdentifier>{E63230B1-49A5-4F0C-B867-123456789DDD}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\animation">
+      <UniqueIdentifier>{E63230B1-49A5-4F0C-B867-123456789FFF}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\generated">
       <UniqueIdentifier>{E63230B1-49A5-4F0C-B867-123456789EEE}</UniqueIdentifier>
     </Filter>
@@ -26,6 +29,12 @@
     </ClCompile>
     <ClCompile Include="src\core\input.cpp">
       <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\animation\tween.cpp">
+      <Filter>src\animation</Filter>
+    </ClCompile>
+    <ClCompile Include="src\animation\animator.cpp">
+      <Filter>src\animation</Filter>
     </ClCompile>
     <ClCompile Include="src\core\async.cpp">
       <Filter>src\core</Filter>
@@ -71,6 +80,15 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\animation\easing.h">
+      <Filter>src\animation</Filter>
+    </ClInclude>
+    <ClInclude Include="src\animation\tween.h">
+      <Filter>src\animation</Filter>
+    </ClInclude>
+    <ClInclude Include="src\animation\animator.h">
+      <Filter>src\animation</Filter>
+    </ClInclude>
     <ClInclude Include="src\core\application.h">
       <Filter>src\core</Filter>
     </ClInclude>
