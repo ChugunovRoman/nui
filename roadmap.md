@@ -75,6 +75,13 @@
 - Animator менеджер (AnimateX/Y/Width/Height/Alpha)
 - Ping-pong, loop, delay, tag-based cancellation
 - Framerate-independent (Update(dt))
+- **Вращение виджетов (Spin):**
+  - `Widget::SetRotation(deg)` + `SetRotationCenter(0..1, 0..1)` — точка вращения в нормализованных координатах (центр, угол и т.д.)
+  - `Animator::AnimateRotation(widget, toDeg, duration, ease)`
+  - CPU-ротатор `Canvas::DrawSurfaceRotated` (inverse-mapping, корректное вращение вокруг произвольной точки — фикс деформации при смещённом pivot, напр. "Corner spin")
+  - Опциональный билинейный сэмплинг для гладких краёв
+  - Рендер-кэш перестраивается только по dirty-флагу — статичные вращаемые виджеты бесплатны, анимация вращения не инвалидирует кэш
+  - Ownership tweens: новая анимация свойства отменяет предыдущую (нет конфликта)
 
 ### 5. GPU рендер (альтернативный бэкенд)
 
