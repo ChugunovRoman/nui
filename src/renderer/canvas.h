@@ -56,6 +56,14 @@ public:
     void DrawTextWrapped(Font& font, const std::string& text,
                          const Rect& bounds, const Color& color);
 
+    // Rotated surface blit (CPU rotation). pivotX/Y is the rotation origin in
+    // destination coordinates. When bilinear is true, bilinear sampling is
+    // used for smoother edges at the cost of ~4x pixel reads; otherwise the
+    // fast nearest-neighbour path is used.
+    void DrawSurfaceRotated(SDL_Surface* src, int dstX, int dstY,
+                             float angleDeg, float pivotX, float pivotY,
+                             bool bilinear = false);
+
     // Scissor (clipping) rect stack
     void PushClip(const Rect& rect);
     void PopClip();

@@ -578,6 +578,89 @@ std::unique_ptr<Widget> BuildAnimDemo(FontManager& fonts) {
             ->SetDelay(static_cast<float>(i) * 0.1f);
     }
 
+    // ── Section 8: Rotation ─────────────────────────────────────
+    auto sec8 = std::make_unique<Label>();
+    sec8->SetRect(20, 620, 380, 22);
+    sec8->SetText("8. Rotation Animation");
+    sec8->SetFontSize(16);
+    sec8->SetTextColor(Color(170, 180, 210));
+    root->AddChild(std::move(sec8));
+
+    // -- Spinning box (center rotation) --
+    auto spinBox = std::make_unique<Widget>();
+    spinBox->SetRect(20, 655, 60, 60);
+    spinBox->SetBgColor(Color(220, 100, 50));
+    spinBox->SetBorderColor(Color(255, 130, 70));
+    Widget* spinPtr = spinBox.get();
+    root->AddChild(std::move(spinBox));
+
+    auto spinLabel = std::make_unique<Label>();
+    spinLabel->SetRect(20, 645, 100, 15);
+    spinLabel->SetText("Center spin");
+    spinLabel->SetFontSize(11);
+    spinLabel->SetTextColor(Color(160, 165, 190));
+    root->AddChild(std::move(spinLabel));
+
+    Animator::AnimateRotation(spinPtr, 360.0f, 3.0f, EaseType::Linear)
+        ->SetLoop(true);
+
+    // -- Spinning box (corner rotation) --
+    auto cornerBox = std::make_unique<Widget>();
+    cornerBox->SetRect(120, 655, 60, 60);
+    cornerBox->SetBgColor(Color(50, 180, 100));
+    cornerBox->SetBorderColor(Color(70, 220, 130));
+    cornerBox->SetRotationCenter(0.0f, 0.0f); // top-left corner
+    Widget* cornerPtr = cornerBox.get();
+    root->AddChild(std::move(cornerBox));
+
+    auto cornerLabel = std::make_unique<Label>();
+    cornerLabel->SetRect(120, 645, 100, 15);
+    cornerLabel->SetText("Corner spin");
+    cornerLabel->SetFontSize(11);
+    cornerLabel->SetTextColor(Color(160, 165, 190));
+    root->AddChild(std::move(cornerLabel));
+
+    Animator::AnimateRotation(cornerPtr, 360.0f, 2.0f, EaseType::Linear)
+        ->SetLoop(true);
+
+    // -- Oscillating rotation --
+    auto oscBox = std::make_unique<Widget>();
+    oscBox->SetRect(220, 655, 60, 60);
+    oscBox->SetBgColor(Color(150, 80, 200));
+    oscBox->SetBorderColor(Color(180, 110, 230));
+    Widget* oscPtr = oscBox.get();
+    root->AddChild(std::move(oscBox));
+
+    auto oscLabel = std::make_unique<Label>();
+    oscLabel->SetRect(220, 645, 100, 15);
+    oscLabel->SetText("Oscillate");
+    oscLabel->SetFontSize(11);
+    oscLabel->SetTextColor(Color(160, 165, 190));
+    root->AddChild(std::move(oscLabel));
+
+    Animator::AnimateRotation(oscPtr, 45.0f, 1.5f, EaseType::InOutSine)
+        ->SetLoop(true).SetPingPong(true);
+
+    // -- Button-triggered rotation --
+    auto rotateBox = std::make_unique<Widget>();
+    rotateBox->SetRect(320, 655, 60, 60);
+    rotateBox->SetBgColor(Color(60, 140, 200));
+    rotateBox->SetBorderColor(Color(80, 170, 230));
+    Widget* rotPtr = rotateBox.get();
+    root->AddChild(std::move(rotateBox));
+
+    auto btnRotate = std::make_unique<Button>();
+    btnRotate->SetRect(390, 655, 80, 28);
+    btnRotate->SetText("Rotate");
+    btnRotate->SetFontSize(12);
+    btnRotate->SetBgColor(Color(50, 100, 160));
+    btnRotate->SetHoverColor(Color(70, 130, 200));
+    btnRotate->SetOnClick([rotPtr](Widget*) {
+        float current = rotPtr->GetRotation();
+        Animator::AnimateRotation(rotPtr, current + 90.0f, 0.5f, EaseType::OutBack);
+    });
+    root->AddChild(std::move(btnRotate));
+
     // ── Footer ──────────────────────────────────────────────────
     auto footer = std::make_unique<Label>();
     footer->SetRect(0, 770, 1200, 24);

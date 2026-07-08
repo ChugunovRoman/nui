@@ -12,22 +12,39 @@ Widget::Widget() {}
 
 Widget::~Widget() {
     ClearChildren();
+    FreeRenderCache();
+}
+
+void Widget::FreeRenderCache() {
+    if (m_renderCache) {
+        SDL_FreeSurface(m_renderCache);
+        m_renderCache = nullptr;
+    }
 }
 
 // ── Geometry ────────────────────────────────────────────────────
 
 void Widget::SetRect(int x, int y, int w, int h) {
-    m_rect = Rect(x, y, w, h);
+    if (m_rect.x != x || m_rect.y != y || m_rect.w != w || m_rect.h != h) {
+        m_rect = Rect(x, y, w, h);
+        MarkDirty();
+    }
 }
 
 void Widget::SetPos(int x, int y) {
-    m_rect.x = x;
-    m_rect.y = y;
+    if (m_rect.x != x || m_rect.y != y) {
+        m_rect.x = x;
+        m_rect.y = y;
+        MarkDirty();
+    }
 }
 
 void Widget::SetSize(int w, int h) {
-    m_rect.w = w;
-    m_rect.h = h;
+    if (m_rect.w != w || m_rect.h != h) {
+        m_rect.w = w;
+        m_rect.h = h;
+        MarkDirty();
+    }
 }
 
 Rect Widget::GetAbsoluteRect() const {
@@ -89,6 +106,68 @@ void Widget::ClearFocus() {
     }
 }
 
+// ── Rotation ────────────────────────────────────────────────────
+// NOTE: rotation and pivot do NOT invalidate the render cache.
+// The cache stores the widget's content (background + children) rendered in
+// local coordinates; rotation is applied to that finished cache in Render().
+// Only content-affecting changes (size, bg color, children) call MarkDirty().
+
+void Widget::SetRotation(float degrees) {
+    if (m_rotation != degrees) m_rotation = degrees;
+}
+
+void Widget::SetRotationCenter(float cx, float cy) {
+    if (m_rotationCenterX != cx || m_rotationCenterY != cy) {
+        m_rotationCenterX = cx;
+        m_rotationCenterY = cy;
+    }
+}
+
+void Widget::RebuildRenderCache(FontManager& fonts) {
+    if (m_rect.w <= 0 || m_rect.h <= 0) return;
+
+    // Allocate or reallocate cache surface WITH alpha channel
+    if (!m_renderCache || m_renderCache->w != m_rect.w || m_renderCache->h != m_rect.h) {
+        FreeRenderCache();
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+        m_renderCache = SDL_CreateRGBSurface(0, m_rect.w, m_rect.h, 32,
+            0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
+#else
+        m_renderCache = SDL_CreateRGBSurface(0, m_rect.w, m_rect.h, 32,
+            0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+#endif
+        if (!m_renderCache) return;
+    }
+
+    // Clear to transparent
+    SDL_FillRect(m_renderCache, nullptr, 0);
+
+    // Render widget subtree to cache surface at LOCAL coordinates (0,0).
+    // We temporarily detach from the parent and zero out position so that
+    // GetAbsoluteRect() returns (0,0,w,h) for this widget and its subtree,
+    // regardless of where it sits in the real tree. Without detaching the
+    // parent, nested rotated widgets would render at wrong offsets in cache.
+    Canvas cacheCanvas;
+    cacheCanvas.Initialize(m_renderCache);
+
+    int origX = m_rect.x;
+    int origY = m_rect.y;
+    Widget* origParent = m_parent;
+    m_rect.x = 0;
+    m_rect.y = 0;
+    m_parent = nullptr;
+
+    DrawBackground(cacheCanvas);
+    RenderChildren(cacheCanvas, fonts);
+
+    // Restore
+    m_rect.x = origX;
+    m_rect.y = origY;
+    m_parent = origParent;
+
+    m_renderDirty = false;
+}
+
 void Widget::Update(float dt) {
     if (!m_visible) return;
     for (auto& child : m_children) {
@@ -98,8 +177,28 @@ void Widget::Update(float dt) {
 
 void Widget::Render(Canvas& canvas, FontManager& fonts) {
     if (!m_visible) return;
-    DrawBackground(canvas);
-    RenderChildren(canvas, fonts);
+
+    if (m_rotation != 0.0f && m_rect.w > 0 && m_rect.h > 0) {
+        // Rotation path: render content to a cache (only when dirty), then
+        // rotate the finished cache to the screen. Rebuilding every frame was
+        // the main perf bottleneck; the cache only needs refresh on content
+        // changes signaled via MarkDirty().
+        if (m_renderDirty) {
+            RebuildRenderCache(fonts);
+        }
+        if (m_renderCache) {
+            Rect abs = GetAbsoluteRect();
+            // Pivot point in screen coords
+            float pivotX = abs.x + abs.w * m_rotationCenterX;
+            float pivotY = abs.y + abs.h * m_rotationCenterY;
+            canvas.DrawSurfaceRotated(m_renderCache, abs.x, abs.y,
+                                       m_rotation, pivotX, pivotY);
+        }
+    } else {
+        // Fast path: direct render to screen
+        DrawBackground(canvas);
+        RenderChildren(canvas, fonts);
+    }
 }
 
 void Widget::DrawBackground(Canvas& canvas) {

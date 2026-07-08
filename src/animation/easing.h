@@ -4,10 +4,7 @@
 // All functions take t in [0, 1] and return value in [0, 1].
 
 #include <cmath>
-
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
+#include "core/math.h"
 
 namespace nui {
 
@@ -44,18 +41,22 @@ inline float InOutCubic(float t) {
 inline float InQuart(float t)    { return t * t * t * t; }
 inline float OutQuart(float t)   { float f = t - 1; return 1 - f*f*f*f; }
 inline float InOutQuart(float t) {
-    return t < 0.5f ? 8*t*t*t*t : 1 - 8*(--t)*t*t*t;
+    if (t < 0.5f) return 8*t*t*t*t;
+    float f = t - 1;
+    return 1 - 8*f*f*f*f;
 }
 
 inline float InQuint(float t)    { return t * t * t * t * t; }
 inline float OutQuint(float t)   { float f = t - 1; return f*f*f*f*f + 1; }
 inline float InOutQuint(float t) {
-    return t < 0.5f ? 16*t*t*t*t*t : 1 + 16*(--t)*t*t*t*t;
+    if (t < 0.5f) return 16*t*t*t*t*t;
+    float f = t - 1;
+    return 1 + 16*f*f*f*f*f;
 }
 
-inline float InSine(float t)    { return 1 - cosf(t * (float)M_PI / 2); }
-inline float OutSine(float t)   { return sinf(t * (float)M_PI / 2); }
-inline float InOutSine(float t) { return -(cosf((float)M_PI * t) - 1) / 2; }
+inline float InSine(float t)    { return 1 - cosf(t * kPI / 2); }
+inline float OutSine(float t)   { return sinf(t * kPI / 2); }
+inline float InOutSine(float t) { return -(cosf(kPI * t) - 1) / 2; }
 
 inline float InExpo(float t)    { return t == 0 ? 0 : powf(2, 10 * (t - 1)); }
 inline float OutExpo(float t)   { return t == 1 ? 1 : 1 - powf(2, -10 * t); }
@@ -96,19 +97,19 @@ inline float InOutBack(float t) {
 inline float InElastic(float t) {
     if (t == 0) return 0;
     if (t == 1) return 1;
-    return -powf(2, 10 * (t - 1)) * sinf((t - 1.1f) * 5 * (float)M_PI);
+    return -powf(2, 10 * (t - 1)) * sinf((t - 1.1f) * 5 * kPI);
 }
 inline float OutElastic(float t) {
     if (t == 0) return 0;
     if (t == 1) return 1;
-    return powf(2, -10 * t) * sinf((t - 0.1f) * 5 * (float)M_PI) + 1;
+    return powf(2, -10 * t) * sinf((t - 0.1f) * 5 * kPI) + 1;
 }
 inline float InOutElastic(float t) {
     if (t == 0) return 0;
     if (t == 1) return 1;
     t *= 2;
-    if (t < 1) return -0.5f * powf(2, 10 * (t - 1)) * sinf((t - 1.1f) * 5 * (float)M_PI);
-    return powf(2, -10 * (t - 1)) * sinf((t - 1.1f) * 5 * (float)M_PI) * 0.5f + 1;
+    if (t < 1) return -0.5f * powf(2, 10 * (t - 1)) * sinf((t - 1.1f) * 5 * kPI);
+    return powf(2, -10 * (t - 1)) * sinf((t - 1.1f) * 5 * kPI) * 0.5f + 1;
 }
 
 inline float OutBounce(float t) {

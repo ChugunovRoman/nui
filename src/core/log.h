@@ -10,6 +10,11 @@
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif
+// Suppress Win32 macros that collide with our method names (e.g. Canvas::DrawText
+// would be macro-expanded to DrawTextW by user32). Keep OutputDebugStringA.
+#ifndef NODRAWTEXT
+#define NODRAWTEXT
+#endif
 #include <windows.h>
 #endif
 

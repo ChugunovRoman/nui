@@ -17,6 +17,11 @@ struct Color {
                (uint32_t(b) << 8)  | uint32_t(a);
     }
 
+    bool operator==(const Color& o) const {
+        return r == o.r && g == o.g && b == o.b && a == o.a;
+    }
+    bool operator!=(const Color& o) const { return !(*this == o); }
+
     static Color White()      { return {255, 255, 255, 255}; }
     static Color Black()      { return {0,   0,   0,   255}; }
     static Color Red()        { return {255, 0,   0,   255}; }

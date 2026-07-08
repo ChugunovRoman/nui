@@ -191,6 +191,7 @@
     <ClInclude Include="src\core\application.h" />
     <ClInclude Include="src\core\input.h" />
     <ClInclude Include="src\core\async.h" />
+    <ClInclude Include="src\core\math.h" />
     <ClInclude Include="src\renderer\canvas.h" />
     <ClInclude Include="src\renderer\color.h" />
     <ClInclude Include="src\renderer\texture.h" />

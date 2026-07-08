@@ -42,6 +42,10 @@ public:
     static Tween* AnimateAlpha(Widget* widget, float to, float duration,
                                  EaseType ease = EaseType::Linear);
 
+    // Animate a widget's rotation (degrees)
+    static Tween* AnimateRotation(Widget* widget, float toDeg, float duration,
+                                    EaseType ease = EaseType::OutCubic);
+
     // Cancel all tweens with a specific tag
     static void CancelByTag(const std::string& tag);
 
@@ -56,6 +60,11 @@ public:
 
 private:
     static std::vector<std::unique_ptr<Tween>>& GetTweens();
+
+    // Tag a tween as the owner of a widget property and cancel any previous
+    // tween owning the same property on the same widget. Keeps at most one
+    // active animation per (widget, property) pair.
+    static void OwnPropertyTween(Tween* t, const Widget* widget, const char* property);
 };
 
 } // namespace nui
