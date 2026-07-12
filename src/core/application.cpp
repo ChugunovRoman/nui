@@ -84,6 +84,9 @@ bool Application::Initialize(const AppDesc& desc) {
 }
 
 void Application::SetRoot(std::unique_ptr<Widget> root) {
+    // Clear capture before swapping the tree — the captured widget belonged to
+    // the old tree and would become a dangling pointer otherwise.
+    m_captureWidget = nullptr;
     m_root = std::move(root);
     if (m_root) {
         m_root->SetRect(0, 0, m_width, m_height);
@@ -185,9 +188,19 @@ void Application::ProcessEvents() {
         }
     }
 
-    // Deliver events to widget tree
+    // Deliver events to widget tree.
     if (m_root) {
-        m_root->HandleInput(*m_input);
+        // A capture widget (if any) gets the first shot at input — this lets
+        // e.g. an expanded Dropdown close on an outside click regardless of
+        // which widget the cursor is over. If it consumes the event, skip the
+        // normal tree traversal to avoid double-processing the same click.
+        bool consumed = false;
+        if (m_captureWidget) {
+            consumed = m_captureWidget->HandleInput(*m_input);
+        }
+        if (!consumed) {
+            m_root->HandleInput(*m_input);
+        }
     }
 }
 

@@ -92,6 +92,10 @@ set(NUI_SOURCES
     src/ui/editbox.cpp
     src/ui/progressbar.cpp
     src/ui/scrollview.cpp
+    src/ui/slider.cpp
+    src/ui/checkbox.cpp
+    src/ui/radiobutton.cpp
+    src/ui/dropdown.cpp
 
     # XML layout loader
     src/xml/layout_loader.cpp

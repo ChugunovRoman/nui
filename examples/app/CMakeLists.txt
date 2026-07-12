@@ -44,6 +44,10 @@ set(EXAMPLE_SOURCES
     ${NUI_ROOT}/ui/editbox.cpp
     ${NUI_ROOT}/ui/progressbar.cpp
     ${NUI_ROOT}/ui/scrollview.cpp
+    ${NUI_ROOT}/ui/slider.cpp
+    ${NUI_ROOT}/ui/checkbox.cpp
+    ${NUI_ROOT}/ui/radiobutton.cpp
+    ${NUI_ROOT}/ui/dropdown.cpp
     ${NUI_ROOT}/xml/layout_loader.cpp
 )
 

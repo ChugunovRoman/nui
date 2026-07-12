@@ -49,6 +49,10 @@ private:
     void ParseEditBox(pugi::xml_node node, Widget* widget, FontManager& fonts);
     void ParseProgressBar(pugi::xml_node node, Widget* widget, FontManager& fonts);
     void ParseScrollView(pugi::xml_node node, Widget* widget);
+    void ParseSlider(pugi::xml_node node, Widget* widget);
+    void ParseCheckBox(pugi::xml_node node, Widget* widget, FontManager& fonts);
+    void ParseRadioButton(pugi::xml_node node, Widget* widget, FontManager& fonts);
+    void ParseDropdown(pugi::xml_node node, Widget* widget, FontManager& fonts);
 
     // Utility: parse "r,g,b,a" string to Color
     Color ParseColor(const std::string& str) const;

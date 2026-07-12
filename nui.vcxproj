@@ -182,6 +182,10 @@
     <ClCompile Include="src\ui\editbox.cpp" />
     <ClCompile Include="src\ui\progressbar.cpp" />
     <ClCompile Include="src\ui\scrollview.cpp" />
+    <ClCompile Include="src\ui\slider.cpp" />
+    <ClCompile Include="src\ui\checkbox.cpp" />
+    <ClCompile Include="src\ui\radiobutton.cpp" />
+    <ClCompile Include="src\ui\dropdown.cpp" />
     <ClCompile Include="src\xml\layout_loader.cpp" />
     <ClCompile Include="src\generated\embedded_resources.cpp" />
   </ItemGroup>
@@ -209,6 +213,10 @@
     <ClInclude Include="src\ui\editbox.h" />
     <ClInclude Include="src\ui\progressbar.h" />
     <ClInclude Include="src\ui\scrollview.h" />
+    <ClInclude Include="src\ui\slider.h" />
+    <ClInclude Include="src\ui\checkbox.h" />
+    <ClInclude Include="src\ui\radiobutton.h" />
+    <ClInclude Include="src\ui\dropdown.h" />
     <ClInclude Include="src\xml\layout_loader.h" />
   </ItemGroup>
 

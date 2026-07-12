@@ -75,6 +75,18 @@
     <ClCompile Include="src\ui\scrollview.cpp">
       <Filter>src\ui</Filter>
     </ClCompile>
+    <ClCompile Include="src\ui\slider.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\checkbox.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\radiobutton.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\dropdown.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
     <ClCompile Include="src\xml\layout_loader.cpp">
       <Filter>src\xml</Filter>
     </ClCompile>
@@ -141,6 +153,18 @@
       <Filter>src\ui</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\scrollview.h">
+      <Filter>src\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\slider.h">
+      <Filter>src\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\checkbox.h">
+      <Filter>src\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\radiobutton.h">
+      <Filter>src\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\dropdown.h">
       <Filter>src\ui</Filter>
     </ClInclude>
     <ClInclude Include="src\xml\layout_loader.h">

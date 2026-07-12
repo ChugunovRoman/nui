@@ -10,6 +10,10 @@
 #include "ui/editbox.h"
 #include "ui/progressbar.h"
 #include "ui/scrollview.h"
+#include "ui/slider.h"
+#include "ui/checkbox.h"
+#include "ui/radiobutton.h"
+#include "ui/dropdown.h"
 #include "renderer/texture.h"
 #include "renderer/font.h"
 #include "renderer/resource.h"
@@ -147,6 +151,22 @@ std::unique_ptr<Widget> LayoutLoader::ParseWidget(pugi::xml_node node,
         auto sv = std::make_unique<ScrollView>();
         ParseScrollView(node, sv.get());
         widget = std::move(sv);
+    } else if (type == "slider") {
+        auto sl = std::make_unique<Slider>();
+        ParseSlider(node, sl.get());
+        widget = std::move(sl);
+    } else if (type == "checkbox") {
+        auto cb = std::make_unique<CheckBox>();
+        ParseCheckBox(node, cb.get(), fonts);
+        widget = std::move(cb);
+    } else if (type == "radiobutton") {
+        auto rb = std::make_unique<RadioButton>();
+        ParseRadioButton(node, rb.get(), fonts);
+        widget = std::move(rb);
+    } else if (type == "dropdown") {
+        auto dd = std::make_unique<Dropdown>();
+        ParseDropdown(node, dd.get(), fonts);
+        widget = std::move(dd);
     } else {
         widget = std::make_unique<Widget>();
     }
@@ -302,6 +322,123 @@ void LayoutLoader::ParseScrollView(pugi::xml_node n, Widget* widget) {
     auto* sv = static_cast<ScrollView*>(widget);
     const char* sbColor = n.attribute("scrollbar_color").as_string(nullptr);
     if (sbColor) sv->SetScrollbarColor(ParseColor(sbColor));
+}
+
+void LayoutLoader::ParseSlider(pugi::xml_node n, Widget* widget) {
+    auto* sl = static_cast<Slider*>(widget);
+
+    // Resolve range first so the value attribute can be interpreted in the
+    // caller's units (e.g. min="0" max="100" value="50" → 0.5 internally).
+    // Without this, value="50" would be clamped to 1.0 and ignore min/max.
+    float minVal = n.attribute("min").as_float(0.0f);
+    float maxVal = n.attribute("max").as_float(1.0f);
+    sl->SetRange(minVal, maxVal);
+
+    if (n.attribute("value")) {
+        float rawValue = n.attribute("value").as_float(0.5f);
+        // If a non-trivial range is set, convert from [min,max] to [0,1].
+        // Otherwise treat value as already-normalized (legacy behaviour).
+        if (n.attribute("min") || n.attribute("max")) {
+            float range = maxVal - minVal;
+            if (range != 0.0f) {
+                sl->SetValue((rawValue - minVal) / range);
+            } else {
+                sl->SetValue(rawValue);
+            }
+        } else {
+            sl->SetValue(rawValue);
+        }
+    }
+
+    const char* fillColor = n.attribute("fill_color").as_string(nullptr);
+    if (fillColor) sl->SetFillColor(ParseColor(fillColor));
+
+    const char* trackColor = n.attribute("track_color").as_string(nullptr);
+    if (trackColor) sl->SetTrackColor(ParseColor(trackColor));
+
+    const char* thumbColor = n.attribute("thumb_color").as_string(nullptr);
+    if (thumbColor) sl->SetThumbColor(ParseColor(thumbColor));
+}
+
+void LayoutLoader::ParseCheckBox(pugi::xml_node n, Widget* widget, FontManager& fonts) {
+    auto* cb = static_cast<CheckBox*>(widget);
+
+    const char* text = n.attribute("text").as_string(nullptr);
+    if (text) cb->SetText(text);
+
+    if (n.attribute("checked"))
+        cb->SetChecked(n.attribute("checked").as_bool(false));
+
+    int fontSize = n.attribute("font_size").as_int(14);
+    cb->SetFontSize(fontSize);
+
+    const char* fontPath = n.attribute("font").as_string(nullptr);
+    if (fontPath) {
+        Font* font = fonts.Get(fontPath, fontSize);
+        if (font) cb->SetFont(font);
+    }
+
+    const char* textColor = n.attribute("text_color").as_string(nullptr);
+    if (textColor) cb->SetTextColor(ParseColor(textColor));
+
+    const char* checkColor = n.attribute("check_color").as_string(nullptr);
+    if (checkColor) cb->SetCheckColor(ParseColor(checkColor));
+}
+
+void LayoutLoader::ParseRadioButton(pugi::xml_node n, Widget* widget, FontManager& fonts) {
+    auto* rb = static_cast<RadioButton*>(widget);
+
+    const char* text = n.attribute("text").as_string(nullptr);
+    if (text) rb->SetText(text);
+
+    const char* group = n.attribute("group").as_string(nullptr);
+    if (group) rb->SetGroup(group);
+
+    if (n.attribute("selected"))
+        rb->SetSelected(n.attribute("selected").as_bool(false));
+
+    int fontSize = n.attribute("font_size").as_int(14);
+    rb->SetFontSize(fontSize);
+
+    const char* fontPath = n.attribute("font").as_string(nullptr);
+    if (fontPath) {
+        Font* font = fonts.Get(fontPath, fontSize);
+        if (font) rb->SetFont(font);
+    }
+
+    const char* textColor = n.attribute("text_color").as_string(nullptr);
+    if (textColor) rb->SetTextColor(ParseColor(textColor));
+
+    const char* dotColor = n.attribute("dot_color").as_string(nullptr);
+    if (dotColor) rb->SetDotColor(ParseColor(dotColor));
+}
+
+void LayoutLoader::ParseDropdown(pugi::xml_node n, Widget* widget, FontManager& fonts) {
+    auto* dd = static_cast<Dropdown*>(widget);
+
+    int fontSize = n.attribute("font_size").as_int(14);
+    dd->SetFontSize(fontSize);
+
+    const char* fontPath = n.attribute("font").as_string(nullptr);
+    if (fontPath) {
+        Font* font = fonts.Get(fontPath, fontSize);
+        if (font) dd->SetFont(font);
+    }
+
+    const char* textColor = n.attribute("text_color").as_string(nullptr);
+    if (textColor) dd->SetTextColor(ParseColor(textColor));
+
+    if (n.attribute("item_height"))
+        dd->SetItemHeight(n.attribute("item_height").as_int(28));
+
+    if (n.attribute("max_visible"))
+        dd->SetMaxVisibleItems(n.attribute("max_visible").as_int(5));
+
+    // Parse <item> children
+    for (auto& item : n.children("item")) {
+        const char* text = item.text().get();
+        if (text) dd->AddItem(text);
+    }
 }
 
 } // namespace nui

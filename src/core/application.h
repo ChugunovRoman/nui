@@ -51,6 +51,13 @@ public:
     Widget*           GetRoot()        const { return m_root.get(); }
     void              SetRoot(std::unique_ptr<Widget> root);
 
+    // Capture widget: receives input FIRST, before the normal widget tree is
+    // traversed. Used by widgets that need to grab all input while in a
+    // transient state (e.g. an expanded Dropdown that must close on any click,
+    // a Slider being dragged). Passing nullptr clears the capture.
+    Widget*           GetCaptureWidget() const { return m_captureWidget; }
+    void              SetCaptureWidget(Widget* w) { m_captureWidget = w; }
+
     // Callbacks
     using TickCallback = std::function<void(float dt)>;
     void SetOnTick(TickCallback cb) { m_onTick = std::move(cb); }
@@ -71,6 +78,7 @@ private:
     std::unique_ptr<FontManager>  m_fontManager;
     std::unique_ptr<InputState>   m_input;
     std::unique_ptr<Widget>       m_root;
+    Widget*                       m_captureWidget = nullptr;
     TickCallback             m_onTick;
 
     int  m_width   = 0;

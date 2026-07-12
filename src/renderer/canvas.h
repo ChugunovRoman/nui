@@ -69,6 +69,10 @@ public:
     void PopClip();
     Rect GetClipRect() const;
     bool IsClipped() const { return !m_clipStack.empty(); }
+    // Number of entries currently on the clip stack. Useful for saving/restoring
+    // the exact clip state (e.g. when an overlay must temporarily escape its
+    // ancestor's clip rect).
+    size_t GetClipStackSize() const { return m_clipStack.size(); }
 
 private:
     bool ClipRect(Rect& r) const;

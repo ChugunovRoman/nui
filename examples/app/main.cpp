@@ -1,6 +1,7 @@
 // NUI: Hello World example
 // Demonstrates every supported widget type:
-//   Widget, Label, Button, Image, EditBox, ProgressBar, ScrollView
+//   Widget, Label, Button, Image, EditBox, ProgressBar, ScrollView,
+//   Slider, CheckBox, RadioButton, Dropdown
 //
 // Two modes:
 //   1. XML layout  — loads layout.xml if present
@@ -18,6 +19,10 @@
 #include "ui/editbox.h"
 #include "ui/progressbar.h"
 #include "ui/scrollview.h"
+#include "ui/slider.h"
+#include "ui/checkbox.h"
+#include "ui/radiobutton.h"
+#include "ui/dropdown.h"
 #include "xml/layout_loader.h"
 #include "renderer/resource.h"
 #include "core/async.h"
@@ -233,6 +238,98 @@ std::unique_ptr<nui::Widget> BuildHelloWorldUI(nui::FontManager& fonts,
     progressYellow->SetBorderColor(Color(60, 60, 80, 255));
     root->AddChild(std::move(progressYellow));
 
+    // -- Slider example --
+    auto sliderHeader = std::make_unique<Label>();
+    sliderHeader->SetRect(40, 580, 340, 22);
+    sliderHeader->SetText("Slider");
+    sliderHeader->SetFontSize(16);
+    sliderHeader->SetTextColor(Color(170, 180, 210, 255));
+    root->AddChild(std::move(sliderHeader));
+
+    auto slider = std::make_unique<Slider>();
+    slider->SetName("slider_volume");
+    slider->SetRect(40, 610, 200, 24);
+    slider->SetValue(0.6f);
+    slider->SetFillColor(Color(60, 160, 80, 255));
+    slider->SetThumbColor(Color(220, 230, 240, 255));
+
+    auto sliderValue = std::make_unique<Label>();
+    sliderValue->SetName("slider_value");
+    sliderValue->SetRect(250, 610, 60, 24);
+    sliderValue->SetText("60%");
+    sliderValue->SetFontSize(14);
+    sliderValue->SetTextColor(Color(180, 180, 200, 255));
+    sliderValue->SetAlignH(AlignH::Center);
+    Label* sliderValPtr = sliderValue.get();
+
+    slider->SetOnValueChanged([sliderValPtr](Widget*, float val) {
+        char buf[16];
+        snprintf(buf, sizeof(buf), "%d%%", static_cast<int>(val * 100));
+        sliderValPtr->SetText(buf);
+    });
+    root->AddChild(std::move(slider));
+    root->AddChild(std::move(sliderValue));
+
+    // -- CheckBox examples --
+    auto checkHeader = std::make_unique<Label>();
+    checkHeader->SetRect(40, 650, 340, 22);
+    checkHeader->SetText("Checkboxes");
+    checkHeader->SetFontSize(16);
+    checkHeader->SetTextColor(Color(170, 180, 210, 255));
+    root->AddChild(std::move(checkHeader));
+
+    auto cb1 = std::make_unique<CheckBox>();
+    cb1->SetRect(40, 680, 160, 24);
+    cb1->SetText("Enable sound");
+    cb1->SetChecked(true);
+    cb1->SetFontSize(13);
+    cb1->SetOnCheckedChanged([](Widget*, bool checked) {
+        NUI_LOG("[Example] Sound: %s\n", checked ? "ON" : "OFF");
+    });
+    root->AddChild(std::move(cb1));
+
+    auto cb2 = std::make_unique<CheckBox>();
+    cb2->SetRect(210, 680, 160, 24);
+    cb2->SetText("Fullscreen");
+    cb2->SetFontSize(13);
+    cb2->SetOnCheckedChanged([](Widget*, bool checked) {
+        NUI_LOG("[Example] Fullscreen: %s\n", checked ? "ON" : "OFF");
+    });
+    root->AddChild(std::move(cb2));
+
+    // -- RadioButton examples --
+    auto radioHeader = std::make_unique<Label>();
+    radioHeader->SetRect(40, 715, 340, 22);
+    radioHeader->SetText("Radio Buttons");
+    radioHeader->SetFontSize(16);
+    radioHeader->SetTextColor(Color(170, 180, 210, 255));
+    root->AddChild(std::move(radioHeader));
+
+    auto rb1 = std::make_unique<RadioButton>();
+    rb1->SetRect(40, 745, 100, 22);
+    rb1->SetText("Low");
+    rb1->SetGroup("quality");
+    rb1->SetFontSize(13);
+    rb1->SetOnSelectedChanged([](Widget*) { NUI_LOG("[Example] Quality: Low\n"); });
+    root->AddChild(std::move(rb1));
+
+    auto rb2 = std::make_unique<RadioButton>();
+    rb2->SetRect(150, 745, 100, 22);
+    rb2->SetText("Medium");
+    rb2->SetGroup("quality");
+    rb2->SetSelected(true);
+    rb2->SetFontSize(13);
+    rb2->SetOnSelectedChanged([](Widget*) { NUI_LOG("[Example] Quality: Medium\n"); });
+    root->AddChild(std::move(rb2));
+
+    auto rb3 = std::make_unique<RadioButton>();
+    rb3->SetRect(260, 745, 100, 22);
+    rb3->SetText("High");
+    rb3->SetGroup("quality");
+    rb3->SetFontSize(13);
+    rb3->SetOnSelectedChanged([](Widget*) { NUI_LOG("[Example] Quality: High\n"); });
+    root->AddChild(std::move(rb3));
+
     // ── Right column ────────────────────────────────────────────
 
     // -- Image widget --
@@ -315,14 +412,36 @@ std::unique_ptr<nui::Widget> BuildHelloWorldUI(nui::FontManager& fonts,
     }
     root->AddChild(std::move(scrollView));
 
+    // -- Dropdown example --
+    auto ddHeader = std::make_unique<Label>();
+    ddHeader->SetRect(420, 750, 340, 22);
+    ddHeader->SetText("Dropdown");
+    ddHeader->SetFontSize(16);
+    ddHeader->SetTextColor(Color(170, 180, 210, 255));
+    root->AddChild(std::move(ddHeader));
+
+    auto dropdown = std::make_unique<Dropdown>();
+    dropdown->SetName("dd_server");
+    dropdown->SetRect(420, 778, 200, 28);
+    dropdown->SetFontSize(13);
+    dropdown->AddItem("Server EU-West");
+    dropdown->AddItem("Server EU-East");
+    dropdown->AddItem("Server US-East");
+    dropdown->AddItem("Server US-West");
+    dropdown->AddItem("Server Asia");
+    dropdown->SetOnItemSelected([](Widget*, int idx, const std::string& text) {
+        NUI_LOG("[Example] Selected server: %s (index %d)\n", text.c_str(), idx);
+    });
+    root->AddChild(std::move(dropdown));
+
     // ── Footer ──────────────────────────────────────────────────
     auto footer = std::make_unique<Widget>();
-    footer->SetRect(0, 740, 800, 28);
+    footer->SetRect(0, 820, 800, 28);
     footer->SetBgColor(Color(25, 25, 38, 255));
 
     auto footerLabel = std::make_unique<Label>();
     footerLabel->SetRect(40, 4, 720, 20);
-    footerLabel->SetText("Click \"Say Hello\" to see console output  ·  Click \"Quit\" or close window to exit");
+    footerLabel->SetText("NUI Example  ·  All widgets demo  ·  Click \"Quit\" or close window to exit");
     footerLabel->SetFontSize(11);
     footerLabel->SetTextColor(Color(100, 100, 120, 255));
     footerLabel->SetAlignH(AlignH::Center);
@@ -373,7 +492,7 @@ int main(int argc, char* argv[]) {
     AppDesc desc;
     desc.title   = "NUI · Hello World";
     desc.width   = 800;
-    desc.height  = 768;
+    desc.height  = 860;
     desc.resizable = true;
 
     if (!app.Initialize(desc)) {
@@ -404,11 +523,10 @@ int main(int argc, char* argv[]) {
         t += dt;
 
         // Pulse the blue progress bar
-        Widget* pb = app.GetRoot()->GetChild("progress_blue");
+        ProgressBar* pb = static_cast<ProgressBar*>(app.GetRoot()->GetChild("progress_blue"));
         if (pb) {
             float v = 0.3f + 0.2f * std::sin(t * 1.5f);
-            // pb is a ProgressBar* but we access it via Widget* for simplicity
-            // In production, store typed pointers or use a visitor
+            pb->SetValue(v);
         }
     });
 

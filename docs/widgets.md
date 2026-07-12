@@ -302,6 +302,164 @@ for (int i = 0; i < 10; ++i) {
 
 ---
 
+## Slider
+
+Ползунок для выбора значения в диапазоне. Внутреннее значение всегда
+нормализовано в `[0.0, 1.0]`; `min`/`max` задают отображаемый диапазон, а
+`GetRangedValue()` возвращает значение в нём.
+
+| Свойство | Тип | XML атрибут | Описание |
+|----------|-----|-------------|----------|
+| Value | float | `value` | Значение. Если заданы `min`/`max`, интерпретируется в их единицах; иначе в `[0,1]` |
+| MinValue | float | `min` | Минимум диапазона |
+| MaxValue | float | `max` | Максимум диапазона |
+| TrackColor | Color | `track_color` | Цвет дорожки |
+| FillColor | Color | `fill_color` | Цвет заполненной части |
+| ThumbColor | Color | `thumb_color` | Цвет ползунка |
+
+### XML
+
+```xml
+<slider name="volume" x="10" y="10" width="200" height="24"
+        value="0.6" fill_color="60,160,80" thumb_color="220,230,240"/>
+
+<!-- с диапазоном: value="50" при min=0/max=100 → внутреннее 0.5 -->
+<slider name="sensitivity" x="10" y="40" width="200" height="24"
+        min="0" max="100" value="50"/>
+```
+
+### C++
+
+```cpp
+auto slider = std::make_unique<Slider>();
+slider->SetValue(0.6f);
+slider->SetFillColor(Color(60, 160, 80));
+slider->SetOnValueChanged([](Widget*, float val) {
+    NUI_LOG("Value: %.0f%%\n", val * 100);
+});
+```
+
+### Особенности
+
+- Клик по дорожке перемещает ползунок к курсору (click-to-jump).
+- Drag автоматически отпускается при отпускании кнопки мыши, даже если слайдер стал невидимым/неактивным во время перетаскивания.
+- Колёсико мыши над слайдером меняет значение на 5%.
+
+---
+
+## CheckBox
+
+Чекбокс с текстом.
+
+| Свойство | Тип | XML атрибут | Описание |
+|----------|-----|-------------|----------|
+| Text | string | `text` | Текст рядом с чекбоксом |
+| Checked | bool | `checked` | Состояние (по умолчанию false) |
+| CheckColor | Color | `check_color` | Цвет галочки |
+| FontSize | int | `font_size` | Размер шрифта |
+
+### XML
+
+```xml
+<checkbox name="sound" x="10" y="10" text="Enable sound"
+          checked="true" check_color="80,200,120"/>
+```
+
+### C++
+
+```cpp
+auto cb = std::make_unique<CheckBox>();
+cb->SetText("Enable sound");
+cb->SetChecked(true);
+cb->SetOnCheckedChanged([](Widget*, bool checked) {
+    NUI_LOG("Sound: %s\n", checked ? "ON" : "OFF");
+});
+```
+
+---
+
+## RadioButton
+
+Радиокнопка с групповой exclusivity.
+
+| Свойство | Тип | XML атрибут | Описание |
+|----------|-----|-------------|----------|
+| Text | string | `text` | Текст рядом с кнопкой |
+| Group | string | `group` | Имя группы (только одна selected) |
+| Selected | bool | `selected` | Выбрана ли |
+| DotColor | Color | `dot_color` | Цвет точки |
+| FontSize | int | `font_size` | Размер шрифта |
+
+### XML
+
+```xml
+<radiobutton name="low" x="10" y="10" text="Low"
+             group="quality" dot_color="80,180,255"/>
+<radiobutton name="high" x="10" y="40" text="High"
+             group="quality" selected="true"/>
+```
+
+### C++
+
+```cpp
+auto rb = std::make_unique<RadioButton>();
+rb->SetText("Option A");
+rb->SetGroup("options");
+rb->SetSelected(true);
+rb->SetOnSelectedChanged([](Widget*) {
+    NUI_LOG("Selected!\n");
+});
+```
+
+### Особенности
+
+- Группы хранятся в глобальном реестре, поэтому радиокнопки в разных родительских контейнерах корректно образуют одну mutually-exclusive группу.
+- При выборе одной кнопки callback `OnSelectedChanged` вызывается и у снимаемой с выбора кнопки, и у новой выбранной.
+- `SetSelected(true)` в XML/коде корректно снимает предыдущий выбор в группе даже до добавления виджета в дерево.
+
+---
+
+## Dropdown (ComboBox)
+
+Выпадающий список с выбором.
+
+| Свойство | Тип | XML атрибут | Описание |
+|----------|-----|-------------|----------|
+| ItemHeight | int | `item_height` | Высота элемента (по умолчанию 28) |
+| MaxVisibleItems | int | `max_visible` | Макс. видимых элементов (по умолчанию 5) |
+| TextColor | Color | `text_color` | Цвет текста |
+
+### XML
+
+```xml
+<dropdown name="server" x="10" y="10" width="200" height="28"
+          item_height="28" max_visible="5">
+    <item>Server EU</item>
+    <item>Server US</item>
+    <item>Server Asia</item>
+</dropdown>
+```
+
+### C++
+
+```cpp
+auto dd = std::make_unique<Dropdown>();
+dd->AddItem("Server EU");
+dd->AddItem("Server US");
+dd->AddItem("Server Asia");
+dd->SetOnItemSelected([](Widget*, int idx, const std::string& text) {
+    NUI_LOG("Selected: %s\n", text.c_str());
+});
+```
+
+### Особенности
+
+- При раскрытии список автоматически открывается вверх, если внизу не хватает места (до низа окна).
+- Раскрытый список временно снимает clip-стек родителя, поэтому корректно отображается даже внутри ScrollView.
+- Раскрытый dropdown захватывает ввод (input capture): любой клик закрывает список и не проваливается в нижележащие виджеты.
+
+---
+
 ## Программное создание виджетов
 
 ### Добавление дочерних виджетов
