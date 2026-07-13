@@ -186,6 +186,11 @@
     <ClCompile Include="src\ui\checkbox.cpp" />
     <ClCompile Include="src\ui\radiobutton.cpp" />
     <ClCompile Include="src\ui\dropdown.cpp" />
+    <ClCompile Include="src\ui\tabcontrol.cpp" />
+    <ClCompile Include="src\ui\treeview.cpp" />
+    <ClCompile Include="src\ui\tooltip.cpp" />
+    <ClCompile Include="src\ui\menu.cpp" />
+    <ClCompile Include="src\ui\dialog.cpp" />
     <ClCompile Include="src\xml\layout_loader.cpp" />
     <ClCompile Include="src\generated\embedded_resources.cpp" />
   </ItemGroup>
@@ -217,6 +222,12 @@
     <ClInclude Include="src\ui\checkbox.h" />
     <ClInclude Include="src\ui\radiobutton.h" />
     <ClInclude Include="src\ui\dropdown.h" />
+    <ClInclude Include="src\ui\tabcontrol.h" />
+    <ClInclude Include="src\ui\treeview.h" />
+    <ClInclude Include="src\ui\tooltip.h" />
+    <ClInclude Include="src\ui\menu.h" />
+    <ClInclude Include="src\ui\dialog.h" />
+    <ClInclude Include="src\ui\popup_geometry.h" />
     <ClInclude Include="src\xml\layout_loader.h" />
   </ItemGroup>
 

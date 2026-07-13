@@ -460,6 +460,302 @@ dd->SetOnItemSelected([](Widget*, int idx, const std::string& text) {
 
 ---
 
+## TabControl
+
+Контейнер с полосой вкладок и переключаемыми страницами. Активна только одна
+страница за раз.
+
+| Свойство | Тип | XML атрибут | Описание |
+|----------|-----|-------------|----------|
+| ActiveTab | int | `active_tab` | Индекс активной вкладки |
+| FontSize | int | `font_size` | Размер шрифта заголовков |
+| TabHeight | int | `tab_height` | Высота полосы вкладок (по умолчанию 28) |
+| TextColor | Color | `text_color` | Цвет текста активной вкладки |
+| TabBgColor | Color | `tab_color` | Фон неактивной вкладки |
+| ActiveTabColor | Color | `active_color` | Фон активной вкладки |
+| HoverTabColor | Color | `hover_color` | Фон вкладки под курсором |
+| ContentBgColor | Color | `content_color` | Фон области контента |
+
+Вкладки задаются дочерними тегами `<tab title="...">`, внутри которых
+размещаются виджеты-страницы.
+
+### XML
+
+```xml
+<tabcontrol name="settings" x="10" y="10" width="500" height="400"
+            tab_height="30" active_tab="0"
+            active_color="60,90,150" content_color="25,25,35">
+    <tab title="Graphics">
+        <label x="10" y="10" width="200" height="24" text="Quality"/>
+        <dropdown x="10" y="40" width="180" height="28">
+            <item>Low</item>
+            <item>High</item>
+        </dropdown>
+    </tab>
+    <tab title="Audio">
+        <label x="10" y="10" width="200" height="24" text="Volume"/>
+        <slider x="10" y="40" width="200" height="24" value="0.7"/>
+    </tab>
+</tabcontrol>
+```
+
+### C++
+
+```cpp
+auto tc = std::make_unique<TabControl>();
+tc->SetTabHeight(30);
+
+auto page1 = std::make_unique<Widget>();
+auto lbl = std::make_unique<Label>();
+lbl->SetText("Graphics settings");
+page1->AddChild(std::move(lbl));
+tc->AddTab("Graphics", std::move(page1));
+
+tc->SetOnTabChanged([](Widget*, int idx) {
+    NUI_LOG("Active tab: %d\n", idx);
+});
+```
+
+### Особенности
+
+- Полоса вкладок рисуется сверху; область контента — под ней.
+- Активная страница рендерится с clip по области контента.
+- Клик по заголовку переключает активную вкладку и стреляет `OnTabChanged`.
+
+---
+
+## Treeview
+
+Сворачиваемое иерархическое дерево с вертикальной прокруткой. Модель данных —
+рекурсивная структура `Node` (не виджет-на-узел), разворачивается в плоский
+список строк с отступами по уровню вложенности.
+
+| Свойство | Тип | XML атрибут | Описание |
+|----------|-----|-------------|----------|
+| RowHeight | int | `row_height` | Высота строки (по умолчанию 20) |
+| Indent | int | `indent` | Отступ на каждый уровень вложенности (по умолчанию 16) |
+| FontSize | int | `font_size` | Размер шрифта |
+| TextColor | Color | `text_color` | Цвет текста |
+| SelectedColor | Color | `selected_color` | Фон выбранной строки |
+| HoverColor | Color | `hover_color` | Фон строки под курсором |
+
+Узлы задаются рекурсивными тегами `<node>`. Атрибуты узла: `text`,
+`expanded` (bool), `user_data` (строка).
+
+### XML
+
+```xml
+<treeview name="files" x="10" y="10" width="300" height="400"
+          row_height="22" indent="18">
+    <node text="project" expanded="true">
+        <node text="src">
+            <node text="main.cpp" user_data="file_main"/>
+            <node text="utils.cpp" user_data="file_utils"/>
+        </node>
+        <node text="resources"/>
+    </node>
+</treeview>
+```
+
+### C++
+
+```cpp
+auto tv = std::make_unique<Treeview>();
+
+Treeview::Node root;
+Treeview::Node project("project");
+project.expanded = true;
+Treeview::Node src("src");
+src.children.emplace_back("main.cpp").userData = "file_main";
+src.children.emplace_back("utils.cpp").userData = "file_utils";
+project.children.push_back(std::move(src));
+root.children.push_back(std::move(project));
+tv->SetRoot(std::move(root));
+
+tv->SetOnNodeSelected([](Widget*, const Treeview::NodePath& path) {
+    NUI_LOG("Selected node, depth=%d\n", (int)path.size());
+});
+```
+
+### Особенности
+
+- Колесо мыши над виджетом прокручивает список.
+- Клик по глифу ▶/▼ сворачивает/раскрывает узел (стреляет `OnNodeToggled`).
+- Клик по строке выбирает узел (стреляет `OnNodeSelected` с путём из индексов).
+- Прокрутка через drag правого скроллбара.
+- **Мутация модели:** `GetRoot()` даёт неконстантный доступ к дереву. Любое
+  изменение (`push_back`/`erase` в `children`, которое может реаллоцировать
+  `std::vector<Node>`) инвалидирует внутренний кэш — после правки вызовите
+  `tv->Rebuild()`, иначе клики/рендер будут использовать висячие указатели.
+- **Скрытие выбранного узла:** при сворачивании родителя выбранного узла
+  выделение визуально исчезает (строки нет в развёрнутом списке), но
+  `GetSelectedPath()` по-прежнему возвращает путь.
+
+---
+
+## Tooltip
+
+Всплывающая подсказка. Не имеет отдельного XML-тега — показывается
+автоматически при наведении на любой виджет, у которого задан непустой
+атрибут `tooltip` (общее свойство всех виджетов).
+
+### Как использовать
+
+Добавьте атрибут `tooltip` к любому виджету:
+
+```xml
+<button name="btn_play" x="10" y="10" width="200" height="50"
+        text="PLAY" tooltip="Launch the game"/>
+```
+
+Подсказка появляется рядом с курсором после задержки наведения (по умолчанию
+0.5 с), позиционируется через `PopupGeometry` с clamping к границам окна.
+
+### C++
+
+```cpp
+btn->SetTooltip("Launch the game");
+
+// Управление встроенным менеджером подсказок (на уровне Application):
+app->SetTooltipEnabled(true);          // включено по умолчанию
+app->SetTooltipDelay(0.8f);            // задержка перед показом, секунды
+```
+
+### Особенности
+
+- Менеджер (`TooltipManager`, синглтон) находит верхний виджет под курсором с
+  непустым `tooltip` и копит hover-таймер.
+- При срабатывании таймера `TooltipWidget` пушится в overlay-stack как
+  немодальный overlay (`modal=false, closeOnOutsideClick=false`) — он просто
+  следует за курсором, не перехватывая клики.
+- Отключается целиком через `Application::SetTooltipEnabled(false)`.
+
+---
+
+## Menu / ContextMenu
+
+Вертикальное всплывающее меню (пункты, сепараторы, подменю). Открывается как
+overlay-попап и закрывается кликом снаружи.
+
+| Свойство | Тип | XML атрибут | Описание |
+|----------|-----|-------------|----------|
+| FontSize | int | `font_size` | Размер шрифта |
+| ItemHeight | int | `item_height` | Высота пункта (по умолчанию 26) |
+| MinWidth | int | `min_width` | Минимальная ширина панели (по умолчанию 120) |
+| TextColor | Color | `text_color` | Цвет текста |
+| HoverColor | Color | `hover_color` | Фон пункта под курсором |
+| PanelColor | Color | `panel_color` | Фон панели |
+
+Пункты задаются тегами `<item text="..." action="id">` (действие задаётся
+строковым id, который разрешается хост-приложением через
+`Menu::SetActionResolver`), `<separator/>` и подменю
+`<menu text="...">...</menu>`.
+
+### XML
+
+```xml
+<contextmenu name="ctx" min_width="160">
+    <item text="Open" action="open"/>
+    <item text="Rename" action="rename"/>
+    <separator/>
+    <item text="Delete" action="delete" enabled="false"/>
+    <menu text="Send to">
+        <item text="Desktop" action="send_desktop"/>
+        <item text="Archive" action="send_archive"/>
+    </menu>
+</contextmenu>
+```
+
+### C++
+
+```cpp
+// Регистрируем резолвер action id → callback (один раз).
+Menu::SetActionResolver([](const std::string& id) -> std::function<void()> {
+    if (id == "open")   return [] { NUI_LOG("Open\n"); };
+    if (id == "delete") return [] { NUI_LOG("Delete\n"); };
+    return nullptr;
+});
+
+// Строим и открываем меню при правом клике:
+auto menu = std::make_unique<Menu>();
+menu->AddItem("Open",   [] { NUI_LOG("Open\n"); });
+menu->AddItem("Rename", [] { NUI_LOG("Rename\n"); });
+menu->AddSeparator();
+menu->AddDisabledItem("Delete");
+Menu::Open(std::move(menu), clickX, clickY, screenW, screenH);
+```
+
+### Особенности
+
+- `Menu::Open` принимает ownership и пушит меню в overlay-stack как немодальное
+  с `closeOnOutsideClick=true` — клик мимо закрывает меню.
+- Подменю открываются отдельным overlay справа от родительского пункта.
+- Ширина панели измеряется по самому длинному пункту при первом рендере.
+- После клика по пункту с действием закрывается вся цепочка меню.
+
+---
+
+## Dialog / MessageBox
+
+Модальное диалоговое окно: заголовок, текст сообщения, опциональные виджеты
+контента и строка кнопок. Открывается как модальный overlay — фон затемняется,
+ввод в нижележащие виджеты блокируется до закрытия.
+
+| Свойство | Тип | XML атрибут | Описание |
+|----------|-----|-------------|----------|
+| Title | string | `title` | Заголовок окна |
+| Message | string | `message` | Текст сообщения (с переносом строк) |
+| Buttons | enum | `buttons` | Набор кнопок: `ok`, `okcancel`, `yesno`, `yesnocancel`, `retrycancel` |
+| FontSize | int | `font_size` | Размер шрифта |
+| TitleColor | Color | `title_color` | Фон заголовка |
+| PanelColor | Color | `panel_color` | Фон панели |
+
+Вложенные виджеты (кроме `<button>`) становятся контентом диалога.
+
+### XML
+
+```xml
+<dialog name="confirm" title="Quit?"
+        message="Unsaved changes will be lost. Continue?"
+        buttons="yesno"
+        title_color="160,60,60"/>
+```
+
+### C++
+
+```cpp
+// Простое сообщение:
+Dialog::ShowMessage("Error", "File not found",
+                    DialogButtons::Ok,
+                    [](DialogResult r) {
+                        if (r == DialogResult::Ok) NUI_LOG("Acknowledged\n");
+                    },
+                    screenW, screenH);
+
+// Полноценный диалог с контентом:
+auto dlg = std::make_unique<Dialog>();
+dlg->SetTitle("Settings");
+dlg->SetMessage("Choose quality:");
+auto dd = std::make_unique<Dropdown>();
+dd->AddItem("Low");
+dd->AddItem("High");
+dlg->AddContent(std::move(dd));
+dlg->SetButtons(DialogButtons::OkCancel);
+dlg->SetOnResult([](DialogResult r) {
+    NUI_LOG("Result: %d\n", (int)r);
+});
+Dialog::Open(std::move(dlg), screenW, screenH);
+```
+
+### Особенности
+
+- `Dialog::Open` принимает ownership и пушит диалог в overlay-stack как
+  **модальный** (`modal=true`) — overlay-pass рисует полупрозрачный dim-фон.
+- Клавиатура: Enter = первичная кнопка, Esc = Cancel (если есть).
+- После клика по кнопке стреляет `OnResult` и диалог снимается с overlay.
+
+---
+
 ## Программное создание виджетов
 
 ### Добавление дочерних виджетов

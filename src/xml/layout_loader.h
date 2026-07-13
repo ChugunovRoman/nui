@@ -53,6 +53,18 @@ private:
     void ParseCheckBox(pugi::xml_node node, Widget* widget, FontManager& fonts);
     void ParseRadioButton(pugi::xml_node node, Widget* widget, FontManager& fonts);
     void ParseDropdown(pugi::xml_node node, Widget* widget, FontManager& fonts);
+    void ParseTabControl(pugi::xml_node node, Widget* widget,
+                         TextureCache& textures, FontManager& fonts);
+    void ParseTreeview(pugi::xml_node node, Widget* widget, FontManager& fonts);
+    void ParseMenu(pugi::xml_node node, Widget* widget, FontManager& fonts);
+    void ParseDialog(pugi::xml_node node, Widget* widget,
+                     TextureCache& textures, FontManager& fonts);
+
+    // True if a parent widget consumes `childTag` inside its own ParseXxx (and
+    // thus the generic child recursion should skip it). Keeps <item>/<tab>/
+    // <node>/<separator> tags from creating stray empty child widgets.
+    static bool IsConsumedChildTag(const std::string& parentType,
+                                   const std::string& childTag);
 
     // Utility: parse "r,g,b,a" string to Color
     Color ParseColor(const std::string& str) const;

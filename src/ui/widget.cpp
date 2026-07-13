@@ -82,6 +82,19 @@ void Widget::ClearChildren() {
     m_children.clear();
 }
 
+void Widget::Raise() {
+    if (!m_parent) return;
+    auto& siblings = m_parent->m_children;
+    for (size_t i = 0; i < siblings.size(); ++i) {
+        if (siblings[i].get() == this) {
+            // Move this entry to the end (topmost) without invalidating any
+            // other unique_ptr ownership — std::rotate shifts pointers.
+            std::rotate(siblings.begin() + i, siblings.begin() + i + 1, siblings.end());
+            return;
+        }
+    }
+}
+
 // ── Event handling ──────────────────────────────────────────────
 
 bool Widget::HandleInput(InputState& input) {

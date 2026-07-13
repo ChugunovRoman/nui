@@ -45,6 +45,9 @@ public:
     // Absolute position (including parent offsets)
     Rect GetAbsoluteRect() const;
 
+    // Check whether a screen-space point (mouse coords) is inside this widget.
+    bool HitTest(int mx, int my) const;
+
     // ── Visibility ──────────────────────────────────────────────
     void SetVisible(bool visible) { m_visible = visible; }
     bool IsVisible() const { return m_visible; }
@@ -67,6 +70,11 @@ public:
     Widget* GetParent() const { return m_parent; }
     void RemoveChild(const std::string& name);
     void ClearChildren();
+
+    // Move this widget to the end of its parent's child list, making it the
+    // topmost sibling (last rendered, first to receive input). No-op if this
+    // widget has no parent. Used by overlays/submenus to come out on top.
+    void Raise();
 
     // ── Event handling ──────────────────────────────────────────
     // Returns true if the event was consumed
@@ -110,8 +118,6 @@ protected:
 
     // Mark widget as needing re-render (for cache invalidation)
     void MarkDirty() { m_renderDirty = true; }
-    // Helper: check if mouse is inside this widget
-    bool HitTest(int mx, int my) const;
 
     // Draw background and border
     void DrawBackground(Canvas& canvas);

@@ -9,6 +9,7 @@
 #include "renderer/canvas.h"
 #include "renderer/font.h"
 #include "ui/widget.h"
+#include "ui/tooltip.h"
 
 #include <SDL.h>
 #include <cstdio>
@@ -87,10 +88,41 @@ void Application::SetRoot(std::unique_ptr<Widget> root) {
     // Clear capture before swapping the tree — the captured widget belonged to
     // the old tree and would become a dangling pointer otherwise.
     m_captureWidget = nullptr;
+    // Overlays reference the old tree too; drop them for the same reason.
+    // Notify the tooltip manager first: it holds a raw pointer to a tooltip
+    // widget owned by the overlay stack, which is about to be destroyed.
+    TooltipManager::Instance().OnOverlaysCleared();
+    m_overlayStack.clear();
     m_root = std::move(root);
     if (m_root) {
         m_root->SetRect(0, 0, m_width, m_height);
     }
+}
+
+Widget* Application::PushOverlay(std::unique_ptr<Widget> w, bool modal, bool closeOnOutsideClick) {
+    if (!w) return nullptr;
+    Widget* raw = w.get();
+    OverlayEntry entry;
+    entry.widget = std::move(w);
+    entry.modal = modal;
+    entry.closeOnOutsideClick = closeOnOutsideClick;
+    m_overlayStack.push_back(std::move(entry));
+    return raw;
+}
+
+void Application::PopOverlay(Widget* w) {
+    if (!w) return;
+    for (auto it = m_overlayStack.begin(); it != m_overlayStack.end(); ++it) {
+        if (it->widget.get() == w) {
+            m_overlayStack.erase(it);
+            return;
+        }
+    }
+}
+
+void Application::ClearOverlays() {
+    TooltipManager::Instance().OnOverlaysCleared();
+    m_overlayStack.clear();
 }
 
 int Application::Run() {
@@ -124,6 +156,20 @@ int Application::Run() {
         // Update and render UI tree
         if (m_root) {
             m_root->Update(dt);
+        }
+
+        // Update overlay widgets (popups, menus, dialogs)
+        for (auto& entry : m_overlayStack) {
+            entry.widget->Update(dt);
+        }
+
+        // Drive the built-in tooltip manager: find the widget under the cursor
+        // and show its tooltip after the hover delay.
+        if (m_tooltipEnabled && m_root && m_input) {
+            TooltipManager::Instance().Update(
+                m_root.get(),
+                m_input->GetMouseX(), m_input->GetMouseY(),
+                m_width, m_height, dt);
         }
 
         Render();
@@ -198,10 +244,70 @@ void Application::ProcessEvents() {
         if (m_captureWidget) {
             consumed = m_captureWidget->HandleInput(*m_input);
         }
+
+        // Overlay layer: popups, menus and dialogs are dispatched before the
+        // root tree. Traverse top-of-stack first (LIFO). A modal overlay swallows
+        // the event entirely (root is never polled while it is up). A non-modal
+        // overlay with closeOnOutsideClick dismisses itself on a click that
+        // lands outside its rect.
+        if (!consumed && !m_overlayStack.empty()) {
+            consumed = DispatchOverlayInput(*m_input);
+        }
+
         if (!consumed) {
             m_root->HandleInput(*m_input);
         }
     }
+}
+
+bool Application::DispatchOverlayInput(InputState& input) {
+    const int mx = input.GetMouseX();
+    const int my = input.GetMouseY();
+    const bool leftClicked = input.IsMouseClicked(MouseButton::Left);
+    const bool anyButtonDown = input.IsMouseDown(MouseButton::Left) ||
+                               input.IsMouseDown(MouseButton::Middle) ||
+                               input.IsMouseDown(MouseButton::Right);
+
+    // Walk from the topmost overlay down. Once we hit a modal one we stop:
+    // it blocks everything beneath it (root + lower overlays).
+    //
+    // IMPORTANT: an overlay's HandleInput may close itself (e.g. a Dialog
+    // button click, a Menu action) and thus mutate m_overlayStack. After
+    // calling HandleInput we must NOT touch the entry/widget references we
+    // held before — capture the flags we need into locals up front and
+    // re-check the stack size before further iteration.
+    for (int i = static_cast<int>(m_overlayStack.size()) - 1; i >= 0; --i) {
+        OverlayEntry& entry = m_overlayStack[i];
+        Widget* w = entry.widget.get();
+        const bool entryModal = entry.modal;
+        const bool entryCloseOutside = entry.closeOnOutsideClick;
+        const bool inside = w->HitTest(mx, my);
+
+        // Close-on-outside-click: only react to an actual click (not a held
+        // button or plain motion). Dismiss the overlay and consume the click
+        // so it never reaches root or other overlays.
+        if (entryCloseOutside && leftClicked && !inside) {
+            m_overlayStack.erase(m_overlayStack.begin() + i);
+            return true; // consume the click
+        }
+
+        // Offer the input to this overlay. If it consumes it, we stop. Note
+        // that HandleInput may erase entries (including this one) from the
+        // stack — do not use `entry`/`w`/`inside` after this point.
+        const bool consumed = w->HandleInput(input);
+
+        if (consumed) {
+            // A modal overlay always blocks downward propagation.
+            if (entryModal) return true;
+            // Non-modal: if the click was inside it, stop propagation too;
+            // otherwise let lower overlays / root see it.
+            if (inside || anyButtonDown) return true;
+        }
+
+        // A modal overlay stops the descent regardless of consumption.
+        if (entryModal) return true;
+    }
+    return false;
 }
 
 void Application::Render() {
@@ -218,6 +324,18 @@ void Application::Render() {
         m_root->Render(*m_canvas, *m_fontManager);
     }
 
+    // Overlay pass: render popups/menus/dialogs on top. At this point the
+    // clip stack is empty (root never leaves an active clip), so overlays may
+    // draw in arbitrary screen coordinates without the Dropdown-style clip
+    // save/restore dance. Draw bottom-up so the topmost overlay is on top.
+    for (auto& entry : m_overlayStack) {
+        if (entry.modal) {
+            // Dim background so the modal stands out.
+            m_canvas->FillRect(Rect(0, 0, m_width, m_height), Color(0, 0, 0, 120));
+        }
+        entry.widget->Render(*m_canvas, *m_fontManager);
+    }
+
     if (SDL_MUSTLOCK(m_screen)) {
         SDL_UnlockSurface(m_screen);
     }
@@ -225,6 +343,14 @@ void Application::Render() {
 
 void Application::DispatchOnMainThread(std::function<void()> cb) {
     Async::DispatchOnMainThread(std::move(cb));
+}
+
+void Application::SetTooltipDelay(float seconds) {
+    TooltipManager::Instance().SetShowDelay(seconds);
+}
+
+float Application::GetTooltipDelay() const {
+    return TooltipManager::Instance().GetShowDelay();
 }
 
 void Application::Shutdown() {

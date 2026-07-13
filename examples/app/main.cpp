@@ -1,10 +1,11 @@
 // NUI: Hello World example
 // Demonstrates every supported widget type:
 //   Widget, Label, Button, Image, EditBox, ProgressBar, ScrollView,
-//   Slider, CheckBox, RadioButton, Dropdown
+//   Slider, CheckBox, RadioButton, Dropdown,
+//   TabControl, Treeview, Tooltip, Menu/ContextMenu, Dialog/MessageBox
 //
 // Two modes:
-//   1. XML layout  — loads layout.xml if present
+//   1. XML layout  — loads example.xml if present
 //   2. Programmatic — builds the same UI in code as a fallback
 
 #include "core/application.h"
@@ -23,6 +24,11 @@
 #include "ui/checkbox.h"
 #include "ui/radiobutton.h"
 #include "ui/dropdown.h"
+#include "ui/tabcontrol.h"
+#include "ui/treeview.h"
+#include "ui/tooltip.h"
+#include "ui/menu.h"
+#include "ui/dialog.h"
 #include "xml/layout_loader.h"
 #include "renderer/resource.h"
 #include "core/async.h"
@@ -56,7 +62,7 @@ std::unique_ptr<nui::Widget> BuildHelloWorldUI(nui::FontManager& fonts,
     // ── 1. Title label ──────────────────────────────────────────
     auto title = std::make_unique<Label>();
     title->SetName("title");
-    title->SetRect(0, 10, 800, 40);
+    title->SetRect(0, 10, 1200, 40);
     title->SetAlignH(AlignH::Center);
     title->SetAlignV(AlignV::Center);
     title->SetText("NUI  ·  Hello World");
@@ -66,7 +72,7 @@ std::unique_ptr<nui::Widget> BuildHelloWorldUI(nui::FontManager& fonts,
 
     // ── 2. Subtitle label ───────────────────────────────────────
     auto subtitle = std::make_unique<Label>();
-    subtitle->SetRect(0, 50, 800, 24);
+    subtitle->SetRect(0, 50, 1200, 24);
     subtitle->SetAlignH(AlignH::Center);
     subtitle->SetText("Every supported widget shown below — all rendered on CPU");
     subtitle->SetFontSize(13);
@@ -75,7 +81,7 @@ std::unique_ptr<nui::Widget> BuildHelloWorldUI(nui::FontManager& fonts,
 
     // ── 3. Separator line (thin widget used as a divider) ───────
     auto separator = std::make_unique<Widget>();
-    separator->SetRect(40, 82, 720, 1);
+    separator->SetRect(40, 82, 1120, 1);
     separator->SetBgColor(Color(60, 60, 80, 255));
     root->AddChild(std::move(separator));
 
@@ -491,8 +497,8 @@ int main(int argc, char* argv[]) {
     Application app;
     AppDesc desc;
     desc.title   = "NUI · Hello World";
-    desc.width   = 800;
-    desc.height  = 860;
+    desc.width   = 1200;
+    desc.height  = 900;
     desc.resizable = true;
 
     if (!app.Initialize(desc)) {
@@ -515,6 +521,92 @@ int main(int argc, char* argv[]) {
     if (root) {
         root->SetRect(0, 0, desc.width, desc.height);
         app.SetRoot(std::move(root));
+    }
+
+    // ── Wire up overlay widgets (Menu / Dialog / ContextMenu / MessageBox) ──
+    // These are not declarative in XML (they pop up dynamically), so we find
+    // the trigger buttons by name and attach programmatic handlers. Results
+    // are reported in the "overlay_result" label.
+    {
+        nui::Widget* r = app.GetRoot();
+        nui::Label* resultLabel = r ? static_cast<nui::Label*>(r->GetChild("overlay_result")) : nullptr;
+        int sw = app.GetWidth();
+        int sh = app.GetHeight();
+
+        // Helper: a small status string shown next to the overlay buttons.
+        auto setResult = [resultLabel](const char* text) {
+            if (resultLabel) resultLabel->SetText(text);
+        };
+
+        // ── btn_menu: open a popup menu at the button (with a submenu) ──
+        if (nui::Widget* btn = r ? r->GetChild("btn_menu") : nullptr) {
+            btn->SetOnClick([sw, sh, setResult](nui::Widget* w) {
+                auto menu = std::make_unique<nui::Menu>();
+                menu->AddItem("New",   [setResult] { setResult("Menu: New"); });
+                menu->AddItem("Open",  [setResult] { setResult("Menu: Open"); });
+                menu->AddSeparator();
+                menu->AddDisabledItem("Save (disabled)");
+                // Submenu: build it up front and hand ownership to the parent.
+                auto sub = std::make_unique<nui::Menu>();
+                sub->AddItem("Desktop", [setResult] { setResult("Sent to Desktop"); });
+                sub->AddItem("Archive", [setResult] { setResult("Sent to Archive"); });
+                menu->AddSubmenu("Send to", std::move(sub));
+                nui::Rect a = w->GetAbsoluteRect();
+                nui::Menu::Open(std::move(menu), a.x, a.y + a.h, sw, sh);
+            });
+        }
+
+        // ── btn_dialog: open a modal dialog with custom content ──
+        if (nui::Widget* btn = r ? r->GetChild("btn_dialog") : nullptr) {
+            btn->SetOnClick([sw, sh, setResult](nui::Widget*) {
+                auto dlg = std::make_unique<nui::Dialog>();
+                dlg->SetTitle("Settings");
+                dlg->SetMessage("Pick a quality level, then confirm.");
+                auto dd = std::make_unique<nui::Dropdown>();
+                dd->AddItem("Low");
+                dd->AddItem("Medium");
+                dd->AddItem("High");
+                dd->SetRect(10, 10, 240, 28);
+                dlg->AddContent(std::move(dd));
+                dlg->SetButtons(nui::DialogButtons::OkCancel);
+                dlg->SetOnResult([setResult](nui::DialogResult res) {
+                    if (res == nui::DialogResult::Ok)      setResult("Dialog: OK");
+                    else if (res == nui::DialogResult::Cancel) setResult("Dialog: Cancel");
+                });
+                nui::Dialog::Open(std::move(dlg), sw, sh);
+            });
+        }
+
+        // ── btn_msgbox: a simple Yes/No message box ──
+        if (nui::Widget* btn = r ? r->GetChild("btn_msgbox") : nullptr) {
+            btn->SetOnClick([sw, sh, setResult](nui::Widget*) {
+                nui::Dialog::ShowMessage(
+                    "Confirm", "Are you sure you want to continue?",
+                    nui::DialogButtons::YesNo,
+                    [setResult](nui::DialogResult res) {
+                        if (res == nui::DialogResult::Yes) setResult("MessageBox: Yes");
+                        else if (res == nui::DialogResult::No) setResult("MessageBox: No");
+                        else setResult("MessageBox: dismissed");
+                    },
+                    sw, sh);
+            });
+        }
+
+        // ── btn_ctxmenu: open a context menu at the button ──
+        if (nui::Widget* btn = r ? r->GetChild("btn_ctxmenu") : nullptr) {
+            btn->SetOnClick([sw, sh, setResult](nui::Widget* w) {
+                auto menu = std::make_unique<nui::Menu>();
+                menu->AddItem("Refresh",    [setResult] { setResult("Ctx: Refresh"); });
+                menu->AddItem("Properties", [setResult] { setResult("Ctx: Properties"); });
+                menu->AddSeparator();
+                // Use the global GetApp() accessor instead of capturing &app:
+                // the menu outlives the local scope (it is owned by the overlay
+                // stack) and a captured reference could dangle during teardown.
+                menu->AddItem("Exit", [] { if (auto* a = nui::GetApp()) a->Quit(); });
+                nui::Rect a = w->GetAbsoluteRect();
+                nui::Menu::Open(std::move(menu), a.x, a.y + a.h, sw, sh);
+            });
+        }
     }
 
     // Animate progress bars

@@ -7,11 +7,18 @@
 | Виджет | Где | Описание |
 |--------|-----|----------|
 | **Label** | Заголовок, подписи | Текст с выравниванием, word-wrap |
-| **Button** | Say Hello, Play, Quit, Disabled, Async | Hover/press состояния, onClick |
+| **Button** | Say Hello, Play, Quit, Disabled, Async | Hover/press состояния, onClick, tooltip |
 | **Image** | Правая колонка | PNG с режимом Fit |
 | **EditBox** | Имя, пароль | Ввод текста (UTF-8), placeholder, password |
 | **ProgressBar** | Синий, зелёный, жёлтый | Процент, кастомная метка |
 | **ScrollView** | Список новостей | Прокрутка с scrollbar, clipping |
+| **Slider / CheckBox / RadioButton** | Левая колонка | Ползунок, чекбоксы, группа радио |
+| **Dropdown** | Список серверов | Выпадающий список |
+| **TabControl** | Правая колонка | Вкладки General/Graphics/About |
+| **Treeview** | Правая колонка | Иерархическое дерево файлов |
+| **Tooltip** | Наведите на кнопки | Всплывающие подсказки (встроены в Application) |
+| **Menu / ContextMenu** | Кнопки Menu / Ctx Menu | Всплывающее меню с подменю |
+| **Dialog / MessageBox** | Кнопки Dialog / MessageBox | Модальные окна |
 | **Widget** | Контейнеры, разделители | Фон, рамки, parent/child дерево |
 | **Async** | Кнопка Async Task | Фоновая задача без блокировки UI |
 
@@ -58,6 +65,6 @@ build\bin\Release\nui-example.exe
 examples/app/
 ├── CMakeLists.txt   # Сборка с зависимостями
 ├── main.cpp         # Демо всех виджетов + async (программно + XML fallback)
-├── layout.xml       # XML layout (скопировать в resources/layouts/)
+├── example.xml      # XML layout (копируется в OutDir/resources/layouts/)
 └── README.md
 ```

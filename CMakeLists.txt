@@ -96,6 +96,11 @@ set(NUI_SOURCES
     src/ui/checkbox.cpp
     src/ui/radiobutton.cpp
     src/ui/dropdown.cpp
+    src/ui/tabcontrol.cpp
+    src/ui/treeview.cpp
+    src/ui/tooltip.cpp
+    src/ui/menu.cpp
+    src/ui/dialog.cpp
 
     # XML layout loader
     src/xml/layout_loader.cpp

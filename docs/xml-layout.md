@@ -99,6 +99,10 @@ UI описывается в XML файлах. LayoutLoader парсит XML и 
 | `<editbox>`, `<input>` | EditBox | Поле ввода |
 | `<progressbar>`, `<progress>` | ProgressBar | Индикатор прогресса |
 | `<scrollview>`, `<scroll>` | ScrollView | Прокручиваемый контейнер |
+| `<tabcontrol>` | TabControl | Вкладки с переключаемыми страницами |
+| `<treeview>` | Treeview | Сворачиваемое иерархическое дерево |
+| `<menu>`, `<contextmenu>` | Menu | Контекстное меню (пункты, сепараторы, подменю) |
+| `<dialog>`, `<messagebox>` | Dialog | Модальное окно (заголовок, текст, кнопки) |
 
 ## Общие атрибуты
 

@@ -5,6 +5,7 @@
 #include <string>
 #include <memory>
 #include <functional>
+#include <vector>
 
 struct SDL_Window;
 struct SDL_Surface;
@@ -62,6 +63,41 @@ public:
     using TickCallback = std::function<void(float dt)>;
     void SetOnTick(TickCallback cb) { m_onTick = std::move(cb); }
 
+    // ── Overlay layer (popup / modal) ────────────────────────────
+    // A separate stack of widgets rendered on top of the root tree and
+    // receiving input before it. Used by Tooltip, Menu/ContextMenu and
+    // Dialog/MessageBox. This generalises the single capture-widget above:
+    // multiple overlays may coexist (e.g. a submenu over a parent menu).
+    struct OverlayEntry {
+        std::unique_ptr<Widget> widget;
+        bool modal = false;              // modal: blocks input to root and lower overlays
+        bool closeOnOutsideClick = false; // (non-modal) a click outside dismisses it
+    };
+
+    // Push a widget onto the overlay stack. modal overlays dim the background
+    // and swallow all input (root is not polled). closeOnOutsideClick makes a
+    // non-modal overlay dismiss itself when the user clicks outside its rect
+    // (typical for menus). Returns a raw pointer to the pushed widget.
+    Widget* PushOverlay(std::unique_ptr<Widget> w, bool modal, bool closeOnOutsideClick);
+
+    // Remove a specific overlay widget from the stack (by raw pointer).
+    void PopOverlay(Widget* w);
+
+    // Remove and drop all overlays.
+    void ClearOverlays();
+
+    // Read-only access to the overlay stack.
+    const std::vector<OverlayEntry>& GetOverlays() const { return m_overlayStack; }
+
+    // Built-in tooltip support. When enabled (default), the Application polls
+    // the widget under the cursor each frame and shows a TooltipWidget on the
+    // overlay stack after a hover delay, using each widget's SetTooltip text.
+    void SetTooltipEnabled(bool enabled) { m_tooltipEnabled = enabled; }
+    bool IsTooltipEnabled() const { return m_tooltipEnabled; }
+    // Hover delay (seconds) before a tooltip appears.
+    void SetTooltipDelay(float seconds);
+    float GetTooltipDelay() const;
+
     // Exit the main loop
     void Quit() { m_running = false; }
 
@@ -71,6 +107,9 @@ public:
 private:
     void ProcessEvents();
     void Render();
+    // Route input through the overlay stack (top first). Returns true if the
+    // event was consumed (root should not be polled). See ProcessEvents.
+    bool DispatchOverlayInput(InputState& input);
 
     SDL_Window*              m_window   = nullptr;
     SDL_Surface*             m_screen   = nullptr;
@@ -79,6 +118,8 @@ private:
     std::unique_ptr<InputState>   m_input;
     std::unique_ptr<Widget>       m_root;
     Widget*                       m_captureWidget = nullptr;
+    std::vector<OverlayEntry>     m_overlayStack;
+    bool                     m_tooltipEnabled = true;
     TickCallback             m_onTick;
 
     int  m_width   = 0;

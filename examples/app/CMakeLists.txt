@@ -48,6 +48,11 @@ set(EXAMPLE_SOURCES
     ${NUI_ROOT}/ui/checkbox.cpp
     ${NUI_ROOT}/ui/radiobutton.cpp
     ${NUI_ROOT}/ui/dropdown.cpp
+    ${NUI_ROOT}/ui/tabcontrol.cpp
+    ${NUI_ROOT}/ui/treeview.cpp
+    ${NUI_ROOT}/ui/tooltip.cpp
+    ${NUI_ROOT}/ui/menu.cpp
+    ${NUI_ROOT}/ui/dialog.cpp
     ${NUI_ROOT}/xml/layout_loader.cpp
 )
 
@@ -73,3 +78,17 @@ if(WIN32)
 elseif(UNIX AND NOT APPLE)
     target_link_libraries(${PROJECT_NAME} PRIVATE dl pthread m)
 endif()
+
+# ── Copy runtime resources next to the executable ──────────────────
+# Layout + bundled fonts/images live under examples/app/example.xml and
+# the top-level resources/ folder. They are needed at runtime because the
+# loader reads them from disk relative to the working directory.
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../resources"
+        "$<TARGET_FILE_DIR:${PROJECT_NAME}>/resources"
+    COMMAND ${CMAKE_COMMAND} -E copy
+        "${CMAKE_CURRENT_SOURCE_DIR}/example.xml"
+        "$<TARGET_FILE_DIR:${PROJECT_NAME}>/resources/layouts/example.xml"
+    COMMENT "Copying resources and example.xml to output directory"
+)

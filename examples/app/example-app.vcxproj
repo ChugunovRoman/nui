@@ -131,7 +131,7 @@
     </Link>
     <PostBuildEvent>
       <Command>
-        xcopy /Y /D /I "$(ProjectDir)..\..\resources" "$(OutDir)resources\"&#xD;&#xA;        xcopy /Y /D /I "$(ProjectDir)layout.xml" "$(OutDir)resources\layouts\"
+        xcopy /Y /D /I "$(ProjectDir)..\..\resources" "$(OutDir)resources\"&#xD;&#xA;        copy /Y "$(ProjectDir)example.xml" "$(OutDir)resources\layouts\example.xml"
       </Command>
       <Message>Copying resources and layout to output directory</Message>
     </PostBuildEvent>
@@ -159,7 +159,7 @@
     </Link>
     <PostBuildEvent>
       <Command>
-        xcopy /Y /D /I "$(ProjectDir)..\..\resources" "$(OutDir)resources\"&#xD;&#xA;        xcopy /Y /D /I "$(ProjectDir)layout.xml" "$(OutDir)resources\layouts\"
+        xcopy /Y /D /I "$(ProjectDir)..\..\resources" "$(OutDir)resources\"&#xD;&#xA;        copy /Y "$(ProjectDir)example.xml" "$(OutDir)resources\layouts\example.xml"
       </Command>
       <Message>Copying resources and layout to output directory</Message>
     </PostBuildEvent>
@@ -183,7 +183,7 @@
     </Link>
     <PostBuildEvent>
       <Command>
-        xcopy /Y /D /I "$(ProjectDir)..\..\resources" "$(OutDir)resources\"&#xD;&#xA;        xcopy /Y /D /I "$(ProjectDir)layout.xml" "$(OutDir)resources\layouts\"
+        xcopy /Y /D /I "$(ProjectDir)..\..\resources" "$(OutDir)resources\"&#xD;&#xA;        copy /Y "$(ProjectDir)example.xml" "$(OutDir)resources\layouts\example.xml"
       </Command>
       <Message>Copying resources and layout to output directory</Message>
     </PostBuildEvent>
@@ -211,7 +211,7 @@
     </Link>
     <PostBuildEvent>
       <Command>
-        xcopy /Y /D /I "$(ProjectDir)..\..\resources" "$(OutDir)resources\"&#xD;&#xA;        xcopy /Y /D /I "$(ProjectDir)layout.xml" "$(OutDir)resources\layouts\"
+        xcopy /Y /D /I "$(ProjectDir)..\..\resources" "$(OutDir)resources\"&#xD;&#xA;        copy /Y "$(ProjectDir)example.xml" "$(OutDir)resources\layouts\example.xml"
       </Command>
       <Message>Copying resources and layout to output directory</Message>
     </PostBuildEvent>
@@ -220,6 +220,12 @@
   <!-- ── Source files ──────────────────────────────────────────── -->
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+  </ItemGroup>
+
+  <!-- Layout file: tracked as a project input so MSBuild re-runs the
+       PostBuildEvent (which copies it to the output) whenever it changes. -->
+  <ItemGroup>
+    <None Include="example.xml" />
   </ItemGroup>
 
   <!-- ── Project references ────────────────────────────────────── -->

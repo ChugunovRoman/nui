@@ -222,6 +222,11 @@ int main() {
 | `<editbox>`, `<input>` | EditBox | Ввод текста (UTF-8, backspace, стрелки) |
 | `<progressbar>`, `<progress>` | ProgressBar | Индикатор прогресса |
 | `<scrollview>`, `<scroll>` | ScrollView | Прокрутка + scrollbar |
+| `<tabcontrol>` | TabControl | Вкладки с переключаемыми страницами |
+| `<treeview>` | Treeview | Сворачиваемое иерархическое дерево |
+| `<menu>`, `<contextmenu>` | Menu | Контекстное меню (пункты, сепараторы, подменю) |
+| `<dialog>`, `<messagebox>` | Dialog | Модальное окно (заголовок, текст, кнопки) |
+| `tooltip` (атрибут) | Tooltip | Всплывающая подсказка (встроена в Application) |
 
 ### Общие свойства XML
 

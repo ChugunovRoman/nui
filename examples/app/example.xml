@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  NUI: Example XML layout
+  Demonstrates every supported widget type.
+  Place this file at: resources/layouts/example.xml
+-->
+<layout name="hello_world" x="0" y="0" width="1200" height="900" bg_color="18,18,28">
+
+    <!-- ── Title ───────────────────────────────────────────────── -->
+    <label name="title" x="0" y="10" width="1200" height="40"
+           text="NUI  ·  Hello World"
+           font_size="28" text_color="200,210,255"
+           align_h="center" align_v="center"/>
+
+    <label x="0" y="50" width="1200" height="24"
+           text="Every supported widget shown below — all rendered on CPU"
+           font_size="13" text_color="120,130,160"
+           align_h="center"/>
+
+    <!-- Separator -->
+    <panel x="40" y="82" width="1120" height="1" bg_color="60,60,80"/>
+
+    <!-- ── Left column: Buttons ────────────────────────────────── -->
+    <label x="40" y="100" width="340" height="22"
+           text="Buttons" font_size="16" text_color="170,180,210"/>
+
+    <button name="btn_hello" x="40" y="130" width="160" height="40"
+            text="Say Hello" font_size="15"
+            bg_color="40,90,160" hover_color="55,110,190" pressed_color="30,70,130"
+            tooltip="Prints a greeting to the console"/>
+
+    <button name="btn_play" x="210" y="130" width="160" height="40"
+            text="▶  Play" font_size="15"
+            bg_color="35,130,50" hover_color="45,155,60" pressed_color="25,100,35"
+            tooltip="Would launch the game (demo only)"/>
+
+    <button name="btn_quit" x="40" y="180" width="160" height="40"
+            text="Quit" font_size="15"
+            bg_color="150,35,35" hover_color="180,50,50" pressed_color="120,25,25"/>
+
+    <button name="btn_disabled" x="210" y="180" width="160" height="40"
+            text="Disabled" font_size="15" enabled="false"/>
+
+    <!-- ── Left column: Text Input ─────────────────────────────── -->
+    <label x="40" y="240" width="340" height="22"
+           text="Text Input" font_size="16" text_color="170,180,210"/>
+
+    <editbox name="edit_name" x="40" y="270" width="330" height="32"
+             placeholder="Enter your name..." font_size="14"/>
+
+    <editbox name="edit_password" x="40" y="310" width="330" height="32"
+             placeholder="Password..." font_size="14" password="true"/>
+
+    <!-- ── Left column: Progress Bars ──────────────────────────── -->
+    <label x="40" y="360" width="340" height="22"
+           text="Progress Bars" font_size="16" text_color="170,180,210"/>
+
+    <progressbar name="progress_blue" x="40" y="390" width="330" height="24"
+                 value="0.45" show_percent="true"
+                 fill_color="40,120,200" border_color="60,60,80"/>
+
+    <progressbar name="progress_green" x="40" y="420" width="330" height="24"
+                 value="0.78" label="78 / 100 items"
+                 fill_color="40,160,60" border_color="60,60,80"/>
+
+    <progressbar name="progress_yellow" x="40" y="450" width="330" height="24"
+                 value="0.15"
+                 fill_color="200,170,30" border_color="60,60,80"/>
+
+    <!-- ── Left column: Slider ─────────────────────────────────── -->
+    <label x="40" y="490" width="340" height="22"
+           text="Slider" font_size="16" text_color="170,180,210"/>
+
+    <slider name="slider_volume" x="40" y="520" width="240" height="24"
+            value="0.6" fill_color="60,160,80" thumb_color="220,230,240"
+            tooltip="Drag to change the volume"/>
+
+    <label name="slider_value" x="290" y="520" width="80" height="24"
+           text="60%" font_size="14" text_color="180,180,200" align_h="center"/>
+
+    <!-- ── Left column: Checkboxes ─────────────────────────────── -->
+    <label x="40" y="560" width="340" height="22"
+           text="Checkboxes" font_size="16" text_color="170,180,210"/>
+
+    <checkbox x="40" y="590" width="160" height="24" text="Enable sound"
+              checked="true" font_size="13"/>
+    <checkbox x="210" y="590" width="160" height="24" text="Fullscreen"
+              font_size="13"/>
+
+    <!-- ── Left column: Radio Buttons ──────────────────────────── -->
+    <label x="40" y="625" width="340" height="22"
+           text="Radio Buttons" font_size="16" text_color="170,180,210"/>
+
+    <radiobutton x="40" y="655" width="100" height="22" text="Low"
+                 group="quality" font_size="13"/>
+    <radiobutton x="150" y="655" width="100" height="22" text="Medium"
+                 group="quality" selected="true" font_size="13"/>
+    <radiobutton x="260" y="655" width="100" height="22" text="High"
+                 group="quality" font_size="13"/>
+
+    <!-- ── Left column: Dropdown ───────────────────────────────── -->
+    <label x="40" y="690" width="340" height="22"
+           text="Dropdown" font_size="16" text_color="170,180,210"/>
+
+    <dropdown name="dd_server" x="40" y="720" width="220" height="28" font_size="13">
+        <item>Server EU-West</item>
+        <item>Server EU-East</item>
+        <item>Server US-East</item>
+        <item>Server US-West</item>
+        <item>Server Asia</item>
+    </dropdown>
+
+    <!-- ── Right column: Image ─────────────────────────────────── -->
+    <label x="420" y="100" width="340" height="22"
+           text="Image (Fit mode)" font_size="16" text_color="170,180,210"/>
+
+    <image name="demo_image" x="420" y="130" width="340" height="200"
+           src="resources/images/cover.png" scale="fit"
+           border_color="60,60,80"/>
+
+    <!-- ── Right column: Word-Wrapped Text ─────────────────────── -->
+    <label x="420" y="345" width="340" height="22"
+           text="Word-Wrapped Text" font_size="16" text_color="170,180,210"/>
+
+    <label x="420" y="375" width="340" height="100"
+           text="This label demonstrates automatic word wrapping. Long text is split across multiple lines to fit inside the widget bounds."
+           font_size="13" text_color="180,180,200"
+           word_wrap="true" bg_color="30,30,42" border_color="50,50,65"/>
+
+    <!-- ── Right column: Scroll View ───────────────────────────── -->
+    <label x="420" y="490" width="340" height="22"
+           text="Scroll View" font_size="16" text_color="170,180,210"/>
+
+    <scrollview name="scroll_news" x="420" y="518" width="340" height="220"
+                border_color="60,60,80">
+        <panel x="8" y="8" width="320" height="36" bg_color="32,32,46" border_color="48,48,62">
+            <label x="8" y="8" width="300" height="20"
+                   text="Welcome to NUI!" font_size="12" text_color="190,195,215"/>
+        </panel>
+        <panel x="8" y="50" width="320" height="36" bg_color="32,32,46" border_color="48,48,62">
+            <label x="8" y="8" width="300" height="20"
+                   text="CPU-only rendering — no GPU needed" font_size="12" text_color="190,195,215"/>
+        </panel>
+        <panel x="8" y="92" width="320" height="36" bg_color="32,32,46" border_color="48,48,62">
+            <label x="8" y="8" width="300" height="20"
+                   text="SDL2 software renderer under the hood" font_size="12" text_color="190,195,215"/>
+        </panel>
+        <panel x="8" y="134" width="320" height="36" bg_color="32,32,46" border_color="48,48,62">
+            <label x="8" y="8" width="300" height="20"
+                   text="XML layouts like xrUICore" font_size="12" text_color="190,195,215"/>
+        </panel>
+        <panel x="8" y="176" width="320" height="36" bg_color="32,32,46" border_color="48,48,62">
+            <label x="8" y="8" width="300" height="20"
+                   text="Image support: PNG, JPG, BMP, TGA, GIF" font_size="12" text_color="190,195,215"/>
+        </panel>
+        <panel x="8" y="218" width="320" height="36" bg_color="32,32,46" border_color="48,48,62">
+            <label x="8" y="8" width="300" height="20"
+                   text="FreeType fonts with anti-aliasing" font_size="12" text_color="190,195,215"/>
+        </panel>
+        <panel x="8" y="260" width="320" height="36" bg_color="32,32,46" border_color="48,48,62">
+            <label x="8" y="8" width="300" height="20"
+                   text="Single self-contained binary" font_size="12" text_color="190,195,215"/>
+        </panel>
+        <panel x="8" y="302" width="320" height="36" bg_color="32,32,46" border_color="48,48,62">
+            <label x="8" y="8" width="300" height="20"
+                   text="Cross-platform: Windows, Linux, macOS" font_size="12" text_color="190,195,215"/>
+        </panel>
+    </scrollview>
+
+    <!-- ── Third column (right): New widgets ───────────────────── -->
+
+    <!-- ── TabControl ──────────────────────────────────────────── -->
+    <label x="800" y="100" width="360" height="22"
+           text="Tab Control" font_size="16" text_color="170,180,210"/>
+
+    <tabcontrol name="tabs" x="800" y="130" width="360" height="250"
+                tab_height="30" active_tab="0"
+                active_color="60,90,150" content_color="25,25,35"
+                border_color="60,60,80">
+        <tab title="General">
+            <label x="10" y="10" width="340" height="22"
+                   text="General settings" font_size="14" text_color="190,195,215"/>
+            <checkbox x="10" y="40" width="200" height="24" text="Enable notifications"
+                      checked="true" font_size="13"/>
+            <checkbox x="10" y="68" width="200" height="24" text="Auto-update"
+                      font_size="13"/>
+        </tab>
+        <tab title="Graphics">
+            <label x="10" y="10" width="340" height="22"
+                   text="Quality" font_size="13" text_color="180,180,200"/>
+            <dropdown x="10" y="36" width="220" height="28" font_size="13">
+                <item>Low</item>
+                <item>Medium</item>
+                <item>High</item>
+                <item>Ultra</item>
+            </dropdown>
+            <label x="10" y="78" width="340" height="22"
+                   text="Brightness" font_size="13" text_color="180,180,200"/>
+            <slider x="10" y="104" width="220" height="24" value="0.7"
+                    fill_color="60,160,80" thumb_color="220,230,240"/>
+        </tab>
+        <tab title="About">
+            <label x="10" y="10" width="340" height="100"
+                   text="NUI example app. Tab pages can hold any nested widgets."
+                   font_size="13" text_color="180,180,200" word_wrap="true"/>
+        </tab>
+    </tabcontrol>
+
+    <!-- ── Treeview ────────────────────────────────────────────── -->
+    <label x="800" y="395" width="360" height="22"
+           text="Tree View" font_size="16" text_color="170,180,210"/>
+
+    <treeview name="tree" x="800" y="425" width="360" height="220"
+              row_height="20" indent="18" font_size="13"
+              text_color="190,195,215" selected_color="40,80,140"
+              hover_color="50,50,70" border_color="60,60,80">
+        <node text="project" expanded="true">
+            <node text="src">
+                <node text="main.cpp" user_data="file_main"/>
+                <node text="utils.cpp" user_data="file_utils"/>
+            </node>
+            <node text="resources">
+                <node text="images"/>
+                <node text="layouts"/>
+            </node>
+        </node>
+        <node text="build">
+            <node text="Release"/>
+            <node text="Debug"/>
+        </node>
+    </treeview>
+
+    <!-- ── Overlays: Menu / Dialog / ContextMenu ───────────────── -->
+    <label x="800" y="660" width="360" height="22"
+           text="Overlays (Menu / Dialog)" font_size="16" text_color="170,180,210"/>
+
+    <button name="btn_menu" x="800" y="690" width="110" height="36"
+            text="Menu" font_size="14"
+            bg_color="60,90,150" hover_color="80,120,180"
+            tooltip="Opens a popup menu at the button"/>
+
+    <button name="btn_dialog" x="920" y="690" width="110" height="36"
+            text="Dialog" font_size="14"
+            bg_color="150,90,40" hover_color="180,120,60"
+            tooltip="Opens a modal dialog window"/>
+
+    <button name="btn_ctxmenu" x="1040" y="690" width="110" height="36"
+            text="Ctx Menu" font_size="14"
+            bg_color="90,60,150" hover_color="120,90,180"
+            tooltip="Right-click anywhere for a context menu"/>
+
+    <button name="btn_msgbox" x="800" y="734" width="230" height="36"
+            text="MessageBox (Yes/No)" font_size="14"
+            bg_color="40,120,90" hover_color="55,150,115"/>
+
+    <label name="overlay_result" x="1040" y="734" width="120" height="36"
+           text="" font_size="12" text_color="180,180,200" align_h="center" align_v="center"/>
+
+    <!-- ── Footer ──────────────────────────────────────────────── -->
+    <panel x="0" y="820" width="1200" height="28" bg_color="25,25,38"/>
+    <label x="0" y="824" width="1200" height="20"
+           text="Hover buttons for tooltips  ·  Right-click for context menu  ·  Close window to exit"
+           font_size="11" text_color="100,100,120" align_h="center"/>
+
+</layout>

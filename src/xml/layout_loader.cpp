@@ -14,6 +14,10 @@
 #include "ui/checkbox.h"
 #include "ui/radiobutton.h"
 #include "ui/dropdown.h"
+#include "ui/tabcontrol.h"
+#include "ui/treeview.h"
+#include "ui/menu.h"
+#include "ui/dialog.h"
 #include "renderer/texture.h"
 #include "renderer/font.h"
 #include "renderer/resource.h"
@@ -167,18 +171,53 @@ std::unique_ptr<Widget> LayoutLoader::ParseWidget(pugi::xml_node node,
         auto dd = std::make_unique<Dropdown>();
         ParseDropdown(node, dd.get(), fonts);
         widget = std::move(dd);
+    } else if (type == "tabcontrol") {
+        auto tc = std::make_unique<TabControl>();
+        ParseTabControl(node, tc.get(), textures, fonts);
+        widget = std::move(tc);
+    } else if (type == "treeview") {
+        auto tv = std::make_unique<Treeview>();
+        ParseTreeview(node, tv.get(), fonts);
+        widget = std::move(tv);
+    } else if (type == "menu" || type == "contextmenu") {
+        auto m = std::make_unique<Menu>();
+        ParseMenu(node, m.get(), fonts);
+        widget = std::move(m);
+    } else if (type == "dialog" || type == "messagebox") {
+        auto d = std::make_unique<Dialog>();
+        ParseDialog(node, d.get(), textures, fonts);
+        widget = std::move(d);
     } else {
         widget = std::make_unique<Widget>();
     }
 
     ParseCommonProps(widget.get(), node);
 
+    // Auto-recurse into child XML nodes and attach them as widget children.
+    // Some widgets consume specific child tags themselves (handled inside their
+    // ParseXxx); skip those here so they are not duplicated as empty children.
     for (auto& childNode : node.children()) {
+        std::string childType = childNode.name();
+        if (IsConsumedChildTag(type, childType)) continue;
         auto child = ParseWidget(childNode, textures, fonts);
         if (child)
             widget->AddChild(std::move(child));
     }
     return widget;
+}
+
+// Returns true when a parent widget type handles `childTag` itself inside its
+// ParseXxx (so the generic recursion should skip it). Without this, e.g. a
+// <dropdown>'s <item> tags would also create stray empty child widgets.
+bool LayoutLoader::IsConsumedChildTag(const std::string& parentType,
+                                      const std::string& childTag) {
+    if (parentType == "dropdown" && childTag == "item") return true;
+    if (parentType == "tabcontrol" && childTag == "tab") return true;
+    if (parentType == "treeview" && childTag == "node") return true;
+    if ((parentType == "menu" || parentType == "contextmenu") &&
+        (childTag == "item" || childTag == "separator")) return true;
+    if (parentType == "dialog" && childTag == "button") return true;
+    return false;
 }
 
 void LayoutLoader::ParseCommonProps(Widget* widget, pugi::xml_node n) {
@@ -438,6 +477,168 @@ void LayoutLoader::ParseDropdown(pugi::xml_node n, Widget* widget, FontManager& 
     for (auto& item : n.children("item")) {
         const char* text = item.text().get();
         if (text) dd->AddItem(text);
+    }
+}
+
+void LayoutLoader::ParseTabControl(pugi::xml_node n, Widget* widget,
+                                   TextureCache& textures, FontManager& fonts) {
+    auto* tc = static_cast<TabControl*>(widget);
+
+    if (n.attribute("font_size"))
+        tc->SetFontSize(n.attribute("font_size").as_int(14));
+    if (n.attribute("tab_height"))
+        tc->SetTabHeight(n.attribute("tab_height").as_int(28));
+    if (n.attribute("active_tab"))
+        tc->SetActiveTab(n.attribute("active_tab").as_int(0));
+    if (n.attribute("text_color"))
+        tc->SetTextColor(ParseColor(n.attribute("text_color").as_string()));
+    if (n.attribute("active_color"))
+        tc->SetActiveTabColor(ParseColor(n.attribute("active_color").as_string()));
+    if (n.attribute("tab_color"))
+        tc->SetTabBgColor(ParseColor(n.attribute("tab_color").as_string()));
+    if (n.attribute("hover_color"))
+        tc->SetHoverTabColor(ParseColor(n.attribute("hover_color").as_string()));
+    if (n.attribute("content_color"))
+        tc->SetContentBgColor(ParseColor(n.attribute("content_color").as_string()));
+
+    // Each <tab title="..."> holds a page built from its own child widgets.
+    // Build a transparent panel as the page and pack the tab's children into it.
+    for (auto& tabNode : n.children("tab")) {
+        std::string title = tabNode.attribute("title").as_string("Tab");
+        auto page = std::make_unique<Widget>();
+        for (auto& childNode : tabNode.children()) {
+            auto child = ParseWidget(childNode, textures, fonts);
+            if (child) page->AddChild(std::move(child));
+        }
+        tc->AddTab(title, std::move(page));
+    }
+}
+
+// Recursive helper: parse a <node> tag (and its nested <node> children) into a
+// Treeview::Node. Attributes: text, expanded, user_data.
+static Treeview::Node ParseTreeNode(pugi::xml_node nodeNode) {
+    Treeview::Node node;
+    node.text = nodeNode.attribute("text").as_string("");
+    if (nodeNode.attribute("expanded"))
+        node.expanded = nodeNode.attribute("expanded").as_bool(false);
+    if (nodeNode.attribute("user_data"))
+        node.userData = nodeNode.attribute("user_data").as_string();
+    for (auto& childNode : nodeNode.children("node")) {
+        node.children.push_back(ParseTreeNode(childNode));
+    }
+    node.hasChildren = !node.children.empty();
+    return node;
+}
+
+void LayoutLoader::ParseTreeview(pugi::xml_node n, Widget* widget, FontManager& fonts) {
+    (void)fonts;
+    auto* tv = static_cast<Treeview*>(widget);
+
+    if (n.attribute("font_size"))
+        tv->SetFontSize(n.attribute("font_size").as_int(14));
+    if (n.attribute("row_height"))
+        tv->SetRowHeight(n.attribute("row_height").as_int(20));
+    if (n.attribute("indent"))
+        tv->SetIndent(n.attribute("indent").as_int(16));
+    if (n.attribute("text_color"))
+        tv->SetTextColor(ParseColor(n.attribute("text_color").as_string()));
+    if (n.attribute("selected_color"))
+        tv->SetSelectedColor(ParseColor(n.attribute("selected_color").as_string()));
+    if (n.attribute("hover_color"))
+        tv->SetHoverColor(ParseColor(n.attribute("hover_color").as_string()));
+
+    // Build the model from top-level <node> children.
+    Treeview::Node root;
+    for (auto& nodeNode : n.children("node")) {
+        root.children.push_back(ParseTreeNode(nodeNode));
+    }
+    root.hasChildren = !root.children.empty();
+    tv->SetRoot(std::move(root));
+}
+
+// Recursive helper: build a Menu (with nested submenus) from a <menu> tag.
+static void ParseMenuItems(pugi::xml_node parent, Menu* menu, FontManager& fonts) {
+    (void)fonts;
+    for (auto& child : parent.children()) {
+        std::string name = child.name();
+        if (name == "separator") {
+            menu->AddSeparator();
+        } else if (name == "item") {
+            std::string text = child.attribute("text").as_string("");
+            std::string actionId = child.attribute("action").as_string("");
+            bool enabled = child.attribute("enabled").as_bool(true);
+            if (!enabled) {
+                menu->AddDisabledItem(text);
+            } else if (!actionId.empty()) {
+                // Defer the actual callback to Menu::SetActionResolver at click
+                // time; carry the id only.
+                menu->AddItemWithId(text, actionId);
+            } else {
+                menu->AddItem(text);
+            }
+        } else if (name == "menu" || name == "submenu") {
+            std::string text = child.attribute("text").as_string("");
+            auto sub = std::make_unique<Menu>();
+            ParseMenuItems(child, sub.get(), fonts);
+            menu->AddSubmenu(text, std::move(sub));
+        }
+    }
+}
+
+void LayoutLoader::ParseMenu(pugi::xml_node n, Widget* widget, FontManager& fonts) {
+    auto* menu = static_cast<Menu*>(widget);
+
+    if (n.attribute("font_size"))
+        menu->SetFontSize(n.attribute("font_size").as_int(14));
+    if (n.attribute("item_height"))
+        menu->SetItemHeight(n.attribute("item_height").as_int(26));
+    if (n.attribute("min_width"))
+        menu->SetMinWidth(n.attribute("min_width").as_int(120));
+    if (n.attribute("text_color"))
+        menu->SetTextColor(ParseColor(n.attribute("text_color").as_string()));
+    if (n.attribute("hover_color"))
+        menu->SetHoverColor(ParseColor(n.attribute("hover_color").as_string()));
+    if (n.attribute("panel_color"))
+        menu->SetPanelColor(ParseColor(n.attribute("panel_color").as_string()));
+
+    ParseMenuItems(n, menu, fonts);
+}
+
+void LayoutLoader::ParseDialog(pugi::xml_node n, Widget* widget,
+                               TextureCache& textures, FontManager& fonts) {
+    auto* dlg = static_cast<Dialog*>(widget);
+
+    if (n.attribute("title"))
+        dlg->SetTitle(n.attribute("title").as_string(""));
+    if (n.attribute("message"))
+        dlg->SetMessage(n.attribute("message").as_string(""));
+    if (n.attribute("font_size"))
+        dlg->SetFontSize(n.attribute("font_size").as_int(14));
+
+    if (n.attribute("buttons")) {
+        std::string b = n.attribute("buttons").as_string("ok");
+        DialogButtons db = DialogButtons::Ok;
+        if (b == "ok")            db = DialogButtons::Ok;
+        else if (b == "okcancel") db = DialogButtons::OkCancel;
+        else if (b == "yesno")    db = DialogButtons::YesNo;
+        else if (b == "yesnocancel") db = DialogButtons::YesNoCancel;
+        else if (b == "retrycancel") db = DialogButtons::RetryCancel;
+        dlg->SetButtons(db);
+    }
+
+    if (n.attribute("title_color"))
+        dlg->SetTitleColor(ParseColor(n.attribute("title_color").as_string()));
+    if (n.attribute("panel_color"))
+        dlg->SetPanelColor(ParseColor(n.attribute("panel_color").as_string()));
+    if (n.attribute("button_color"))
+        dlg->SetButtonColor(ParseColor(n.attribute("button_color").as_string()));
+
+    // Non-<button> children become dialog content widgets.
+    for (auto& childNode : n.children()) {
+        std::string childName = childNode.name();
+        if (childName == "button") continue; // buttons handled via SetButtons
+        auto child = ParseWidget(childNode, textures, fonts);
+        if (child) dlg->AddContent(std::move(child));
     }
 }
 
