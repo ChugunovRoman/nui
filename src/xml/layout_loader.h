@@ -9,6 +9,7 @@
 
 #include <pugixml.hpp>
 #include "renderer/color.h"
+#include "ui/widget.h"
 
 namespace nui {
 
@@ -68,6 +69,13 @@ private:
 
     // Utility: parse "r,g,b,a" string to Color
     Color ParseColor(const std::string& str) const;
+
+    // Parse the "anchor" attribute: space-separated tokens
+    // (left/right/top/bottom/center/all/fill) → AnchorFlag bitmask.
+    static AnchorFlag ParseAnchorFlags(const char* str);
+    // Parse a single stretch token ("fixed"/"fill"/"proportional"). Returns
+    // Fixed when str is null.
+    static StretchMode ParseStretch(const char* str);
 
     std::map<std::string, Color> m_colorDefs;
 };

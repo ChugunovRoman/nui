@@ -11,7 +11,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="example.xml">
+    <None Include="demo.xml">
       <Filter>examples</Filter>
     </None>
   </ItemGroup>

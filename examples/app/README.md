@@ -56,7 +56,7 @@ build\bin\Release\nui-example.exe
 
 ## Два режима работы
 
-1. **XML layout** — если `resources/layouts/example.xml` существует, UI загружается из XML
+1. **XML layout** — если `resources/app/demo.xml` существует, UI загружается из XML
 2. **Programmatic** — если XML не найден, UI строится кодом (fallback)
 
 ## Структура
@@ -65,6 +65,6 @@ build\bin\Release\nui-example.exe
 examples/app/
 ├── CMakeLists.txt   # Сборка с зависимостями
 ├── main.cpp         # Демо всех виджетов + async (программно + XML fallback)
-├── example.xml      # XML layout (копируется в OutDir/resources/layouts/)
+├── demo.xml         # XML layout (копируется в OutDir/resources/app/)
 └── README.md
 ```

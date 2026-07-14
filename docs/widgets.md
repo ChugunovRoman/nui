@@ -16,6 +16,11 @@
 | AlignH | enum | `align_h` | Горизонтальное выравнивание: `left`, `center`, `right` |
 | AlignV | enum | `align_v` | Вертикальное выравнивание: `top`, `center`, `bottom` |
 | Tooltip | string | `tooltip` | Подсказка |
+| Anchor | AnchorFlag | `anchor` | Якоря к краям родителя: `left` `top` `right` `bottom` `center` `all` (через пробел). Включает адаптивную вёрстку |
+| Anchor (Godot) | float | `anchor_left`/`anchor_right`/`anchor_top`/`anchor_bottom` | Нормализованные точки (0..1); -1 = наследовать из флагов |
+| StretchW/H | StretchMode | `stretch_w`, `stretch_h` | Режим размера при ресайзе: `fixed`, `fill`, `proportional` |
+| MinSize | int | `min_width`, `min_height` | Минимальный размер (clamp после layout) |
+| MaxSize | int | `max_width`, `max_height` | Максимальный размер (clamp после layout) |
 
 ### Цвета в XML
 
@@ -641,7 +646,7 @@ overlay-попап и закрывается кликом снаружи.
 |----------|-----|-------------|----------|
 | FontSize | int | `font_size` | Размер шрифта |
 | ItemHeight | int | `item_height` | Высота пункта (по умолчанию 26) |
-| MinWidth | int | `min_width` | Минимальная ширина панели (по умолчанию 120) |
+| MinPanelWidth | int | `min_panel_width` | Минимальная ширина панели (по умолчанию 120). Для совместимости принимается и устаревший `min_width` |
 | TextColor | Color | `text_color` | Цвет текста |
 | HoverColor | Color | `hover_color` | Фон пункта под курсором |
 | PanelColor | Color | `panel_color` | Фон панели |
@@ -654,7 +659,7 @@ overlay-попап и закрывается кликом снаружи.
 ### XML
 
 ```xml
-<contextmenu name="ctx" min_width="160">
+<contextmenu name="ctx" min_panel_width="160">
     <item text="Open" action="open"/>
     <item text="Rename" action="rename"/>
     <separator/>

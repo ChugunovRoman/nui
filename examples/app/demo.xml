@@ -2,20 +2,23 @@
 <!--
   NUI: Example XML layout
   Demonstrates every supported widget type.
-  Place this file at: resources/layouts/example.xml
+  Place this file at: resources/app/demo.xml
 -->
 <layout name="hello_world" x="0" y="0" width="1200" height="900" bg_color="18,18,28">
 
     <!-- ── Title ───────────────────────────────────────────────── -->
+    <!-- Anchored to the top, stretched horizontally — adapts to window resize -->
     <label name="title" x="0" y="10" width="1200" height="40"
            text="NUI  ·  Hello World"
            font_size="28" text_color="200,210,255"
-           align_h="center" align_v="center"/>
+           align_h="center" align_v="center"
+           anchor="left right top" stretch_w="fill"/>
 
     <label x="0" y="50" width="1200" height="24"
            text="Every supported widget shown below — all rendered on CPU"
            font_size="13" text_color="120,130,160"
-           align_h="center"/>
+           align_h="center"
+           anchor="left right top" stretch_w="fill"/>
 
     <!-- Separator -->
     <panel x="40" y="82" width="1120" height="1" bg_color="60,60,80"/>
@@ -257,9 +260,12 @@
            text="" font_size="12" text_color="180,180,200" align_h="center" align_v="center"/>
 
     <!-- ── Footer ──────────────────────────────────────────────── -->
-    <panel x="0" y="820" width="1200" height="28" bg_color="25,25,38"/>
+    <!-- Anchored to the bottom + both sides: stays pinned and stretches on resize -->
+    <panel x="0" y="820" width="1200" height="28" bg_color="25,25,38"
+           anchor="left right bottom" stretch_w="fill"/>
     <label x="0" y="824" width="1200" height="20"
            text="Hover buttons for tooltips  ·  Right-click for context menu  ·  Close window to exit"
-           font_size="11" text_color="100,100,120" align_h="center"/>
+           font_size="11" text_color="100,100,120" align_h="center"
+           anchor="left right bottom" stretch_w="fill"/>
 
 </layout>

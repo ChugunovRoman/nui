@@ -143,3 +143,4 @@ endif()
 # ── Example apps ───────────────────────────────────────────────
 add_subdirectory(examples/app)
 add_subdirectory(examples/animations)
+add_subdirectory(examples/layouts)

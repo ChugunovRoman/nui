@@ -15,7 +15,7 @@
 | Анимации (Tween + Easing + Rotation) | ✅ Готово | 0.2.0 |
 | Overlay Layer (popup/modal стек в Application) | ✅ Готово | 0.3.0 |
 | Среднеприоритетные виджеты (TabControl, Treeview, Tooltip, Menu, Dialog) | ✅ Готово | 0.3.0 |
-| Адаптивные Layouts (Anchor System) | 📋 Планируется | 0.4.0 |
+| Адаптивные Layouts (Anchor System) | ✅ Готово | 0.3.0 |
 
 ---
 

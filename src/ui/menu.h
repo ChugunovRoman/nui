@@ -57,7 +57,9 @@ public:
     void SetFontSize(int size) { m_fontSize = size; }
     void SetFont(Font* font) { m_font = font; }
     void SetItemHeight(int h) { m_itemHeight = h; }
-    void SetMinWidth(int w) { m_minWidth = w; }
+    // Minimum width of the popup panel (XML: min_panel_width; the legacy
+    // min_width attribute is still accepted as an alias).
+    void SetMinPanelWidth(int w) { m_minPanelWidth = w; }
     void SetTextColor(const Color& c) { m_textColor = c; }
     void SetHoverColor(const Color& c) { m_hoverColor = c; }
     void SetPanelColor(const Color& c) { m_panelColor = c; }
@@ -87,7 +89,7 @@ private:
     int  m_fontSize = 14;
     Font* m_font = nullptr;
     int  m_itemHeight = 26;
-    int  m_minWidth = 120;
+    int  m_minPanelWidth = 120;
     int  m_screenW = 0;
     int  m_screenH = 0;
 

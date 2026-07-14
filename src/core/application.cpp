@@ -78,6 +78,7 @@ bool Application::Initialize(const AppDesc& desc) {
     // Create default root widget (fullscreen)
     m_root = std::make_unique<Widget>();
     m_root->SetRect(0, 0, m_width, m_height);
+    m_root->UpdateLayout();
 
     m_running = true;
     NUI_LOG("[NUI] Initialized: %dx%d (CPU software rendering)\n", m_width, m_height);
@@ -96,6 +97,7 @@ void Application::SetRoot(std::unique_ptr<Widget> root) {
     m_root = std::move(root);
     if (m_root) {
         m_root->SetRect(0, 0, m_width, m_height);
+        m_root->UpdateLayout();
     }
 }
 
@@ -199,6 +201,8 @@ void Application::ProcessEvents() {
                     }
                     if (m_root) {
                         m_root->SetRect(0, 0, m_width, m_height);
+                        // Recompute anchored descendants against the new size.
+                        m_root->UpdateLayout();
                     }
                 }
                 break;

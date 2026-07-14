@@ -24,6 +24,7 @@
 
 #include <cstdio>
 #include <cstring>
+#include <climits>
 #include <algorithm>
 #include <sstream>
 
@@ -54,6 +55,37 @@ Color LayoutLoader::ParseColor(const std::string& str) const {
         return Color(ClampByte(r), ClampByte(g), ClampByte(b), ClampByte(a));
     }
     return Color();
+}
+
+// ── Anchor / stretch parsing ────────────────────────────────────
+
+AnchorFlag LayoutLoader::ParseAnchorFlags(const char* str) {
+    // Tokens are space-separated. Recognized: left/right/top/bottom/center/
+    // all/fill. "center" → no edge flags (center mode); "all"/"fill" → all
+    // four edges (full stretch).
+    AnchorFlag flags = AnchorFlag::None;
+    std::istringstream ss(str);
+    std::string tok;
+    while (ss >> tok) {
+        if      (tok == "left")   flags = flags | AnchorFlag::Left;
+        else if (tok == "top")    flags = flags | AnchorFlag::Top;
+        else if (tok == "right")  flags = flags | AnchorFlag::Right;
+        else if (tok == "bottom") flags = flags | AnchorFlag::Bottom;
+        else if (tok == "all" || tok == "fill")
+            flags = AnchorFlag::Left | AnchorFlag::Top |
+                    AnchorFlag::Right | AnchorFlag::Bottom;
+        else if (tok == "center")
+            flags = AnchorFlag::None; // center mode: no pinned edges
+        // Unknown tokens are silently ignored (forward-compat).
+    }
+    return flags;
+}
+
+StretchMode LayoutLoader::ParseStretch(const char* str) {
+    if (!str) return StretchMode::Fixed;
+    if (strcmp(str, "fill") == 0)         return StretchMode::Fill;
+    if (strcmp(str, "proportional") == 0) return StretchMode::Proportional;
+    return StretchMode::Fixed; // "fixed" / unknown
 }
 
 void LayoutLoader::LoadColorDefs(const std::string& path) {
@@ -257,6 +289,43 @@ void LayoutLoader::ParseCommonProps(Widget* widget, pugi::xml_node n) {
 
     const char* tooltip = n.attribute("tooltip").as_string(nullptr);
     if (tooltip) widget->SetTooltip(tooltip);
+
+    // ── Anchor / responsive layout ────────────────────────────
+    // Order matters: stretch/min/max must be applied BEFORE SetAnchor so the
+    // immediate UpdateLayout() inside SetAnchor honours the constraints.
+    // Note: ParseCommonProps runs before AddChild, so the widget has no parent
+    // yet — the live recomputation happens later when Application calls
+    // UpdateLayout() on the root after loading.
+    const char* sw = n.attribute("stretch_w").as_string(nullptr);
+    const char* sh = n.attribute("stretch_h").as_string(nullptr);
+    if (sw) widget->SetStretchW(ParseStretch(sw));
+    if (sh) widget->SetStretchH(ParseStretch(sh));
+
+    if (n.attribute("min_width") || n.attribute("min_height")) {
+        widget->SetMinSize(n.attribute("min_width").as_int(0),
+                           n.attribute("min_height").as_int(0));
+    }
+    if (n.attribute("max_width") || n.attribute("max_height")) {
+        // Default to a very large value (effectively unbounded) when one of the
+        // max_* attributes is omitted, matching the SetMaxSize default.
+        int mw = n.attribute("max_width").as_int(INT_MAX);
+        int mh = n.attribute("max_height").as_int(INT_MAX);
+        widget->SetMaxSize(mw, mh);
+    }
+
+    const char* anchor = n.attribute("anchor").as_string(nullptr);
+    if (anchor) {
+        widget->SetAnchor(ParseAnchorFlags(anchor));
+    }
+    // Explicit normalized anchor points (Godot-style) override the flag set.
+    if (n.attribute("anchor_left") || n.attribute("anchor_right") ||
+        n.attribute("anchor_top")  || n.attribute("anchor_bottom")) {
+        widget->SetAnchor(
+            n.attribute("anchor_left").as_float(-1.f),
+            n.attribute("anchor_right").as_float(-1.f),
+            n.attribute("anchor_top").as_float(-1.f),
+            n.attribute("anchor_bottom").as_float(-1.f));
+    }
 }
 
 void LayoutLoader::ParseLabel(pugi::xml_node n, Widget* widget, FontManager& fonts) {
@@ -592,8 +661,13 @@ void LayoutLoader::ParseMenu(pugi::xml_node n, Widget* widget, FontManager& font
         menu->SetFontSize(n.attribute("font_size").as_int(14));
     if (n.attribute("item_height"))
         menu->SetItemHeight(n.attribute("item_height").as_int(26));
-    if (n.attribute("min_width"))
-        menu->SetMinWidth(n.attribute("min_width").as_int(120));
+    // Min panel width. Prefer min_panel_width; accept the legacy min_width
+    // attribute as an alias (it is also parsed as a common size-constraint
+    // by ParseCommonProps, which is harmless here).
+    if (n.attribute("min_panel_width"))
+        menu->SetMinPanelWidth(n.attribute("min_panel_width").as_int(120));
+    else if (n.attribute("min_width"))
+        menu->SetMinPanelWidth(n.attribute("min_width").as_int(120));
     if (n.attribute("text_color"))
         menu->SetTextColor(ParseColor(n.attribute("text_color").as_string()));
     if (n.attribute("hover_color"))

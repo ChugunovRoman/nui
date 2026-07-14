@@ -136,6 +136,14 @@ struct Rect {
 | `SetBorderColor(color)` | Цвет рамки |
 | `SetAlignH(AlignH)` | Горизонтальное выравнивание |
 | `SetAlignV(AlignV)` | Вертикальное выравнивание |
+| `SetAnchor(AnchorFlag)` | Якоря к краям родителя (флаги) |
+| `SetAnchor(l, r, t, b)` | Нормализованные якоря (Godot-style, 0..1) |
+| `SetStretch(w, h)` | Режим размера при ресайзе |
+| `SetStretchW(m)` / `SetStretchH(m)` | Режим размера по одной оси |
+| `SetMinSize(w, h)` | Минимальный размер |
+| `SetMaxSize(w, h)` | Максимальный размер |
+| `UpdateLayout()` | Пересчитать геометрию (якоря + дочерние) |
+| `MarkLayoutDirty()` | Пометить поддерево как требующее пересчёта |
 | `AddChild(widget)` | Добавить дочерний виджет |
 | `GetChild(name)` | Найти дочерний по имени |
 | `RemoveChild(name)` | Удалить дочерний |
@@ -152,6 +160,25 @@ struct Rect {
 enum class AlignH { Left, Center, Right };
 enum class AlignV { Top,  Center, Bottom };
 ```
+
+### AnchorFlag / StretchMode
+
+```cpp
+enum class AnchorFlag : uint8_t {
+    None   = 0,
+    Left   = 1 << 0,
+    Top    = 1 << 1,
+    Right  = 1 << 2,
+    Bottom = 1 << 3,
+};
+AnchorFlag operator|(AnchorFlag, AnchorFlag);
+AnchorFlag operator&(AnchorFlag, AnchorFlag);
+
+enum class StretchMode { Fixed, Fill, Proportional };
+```
+
+Флаги комбинируются через `|`. Привязка к двум противоположным краям
+(`Left|Right` или `Top|Bottom`) растягивает виджет между ними.
 
 ---
 

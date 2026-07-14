@@ -60,7 +60,7 @@ void Menu::ClearItems() {
 }
 
 int Menu::MeasureWidth(Font& font) const {
-    int w = m_minWidth;
+    int w = m_minPanelWidth;
     for (const auto& it : m_items) {
         if (it.separator) continue;
         int tw = font.GetTextWidth(it.text);
@@ -89,7 +89,7 @@ void Menu::Configure(int x, int y, int screenW, int screenH) {
     m_screenH = screenH;
     // We need the font to measure width; defer final positioning to Render
     // (where FontManager is available) — but set a reasonable initial rect now.
-    int w = std::max(m_minWidth, 120);
+    int w = std::max(m_minPanelWidth, 120);
     int h = MeasureHeight();
     Rect placed = PopupGeometry::ClampToScreen(Rect(x, y, w, h), screenW, screenH, 4);
     SetRect(placed.x, placed.y, placed.w, placed.h);

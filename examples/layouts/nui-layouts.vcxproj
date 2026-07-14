@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  NUI: Example application
-  Links against nui.lib (static) + vcpkg dependencies.
-  Run msvc\setup.bat before building.
+  NUI: Adaptive Layouts (Anchor System) example
+  Links against nui.lib (static) + Externals dependencies.
 -->
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
@@ -29,11 +28,11 @@
   <!-- ── Globals ───────────────────────────────────────────────── -->
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
-    <ProjectGuid>{B2C3D4E5-2222-3333-4444-555566667777}</ProjectGuid>
+    <ProjectGuid>{D4E5F607-4444-5555-6666-777788899900}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>example-app</RootNamespace>
+    <RootNamespace>nui-layouts</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>example-app</ProjectName>
+    <ProjectName>nui-layouts</ProjectName>
   </PropertyGroup>
 
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -68,7 +67,6 @@
 
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
 
-
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
@@ -94,7 +92,7 @@
 
   <PropertyGroup Label="UserMacros" />
 
-  <!-- ── Output directories (same as library) ──────────────────── -->
+  <!-- ── Output directories ─────────────────────────────────────── -->
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)bin\$(Configuration)\$(Platform)\</OutDir>
     <IntDir>$(SolutionDir)obj\$(Configuration)\$(ProjectName)\</IntDir>
@@ -129,12 +127,6 @@
       <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>nui.lib;SDL2.lib;SDL2main.lib;SDL_ttf.lib;freetype.lib;pugixml.lib;imm32.lib;version.lib;winmm.lib;setupapi.lib;ole32.lib;oleaut32.lib;uuid.lib;advapi32.lib;shell32.lib;dinput8.lib;gdi32.lib;kernel32.lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
-      <Command>
-        xcopy /Y /D /I "$(ProjectDir)..\..\resources" "$(OutDir)resources\"&#xD;&#xA;        if not exist "$(OutDir)resources\app" mkdir "$(OutDir)resources\app"&#xD;&#xA;        copy /Y "$(ProjectDir)demo.xml" "$(OutDir)resources\app\demo.xml"
-      </Command>
-      <Message>Copying resources and layout to output directory</Message>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
 
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -157,12 +149,6 @@
       <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>nui.lib;SDL2.lib;SDL2main.lib;SDL_ttf.lib;freetype.lib;pugixml.lib;imm32.lib;version.lib;winmm.lib;setupapi.lib;ole32.lib;oleaut32.lib;uuid.lib;advapi32.lib;shell32.lib;dinput8.lib;gdi32.lib;kernel32.lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
-      <Command>
-        xcopy /Y /D /I "$(ProjectDir)..\..\resources" "$(OutDir)resources\"&#xD;&#xA;        if not exist "$(OutDir)resources\app" mkdir "$(OutDir)resources\app"&#xD;&#xA;        copy /Y "$(ProjectDir)demo.xml" "$(OutDir)resources\app\demo.xml"
-      </Command>
-      <Message>Copying resources and layout to output directory</Message>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
 
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -181,12 +167,6 @@
       <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>nui.lib;SDL2.lib;SDL2main.lib;SDL_ttf.lib;freetype.lib;pugixml.lib;imm32.lib;version.lib;winmm.lib;setupapi.lib;ole32.lib;oleaut32.lib;uuid.lib;advapi32.lib;shell32.lib;dinput8.lib;gdi32.lib;kernel32.lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
-      <Command>
-        xcopy /Y /D /I "$(ProjectDir)..\..\resources" "$(OutDir)resources\"&#xD;&#xA;        if not exist "$(OutDir)resources\app" mkdir "$(OutDir)resources\app"&#xD;&#xA;        copy /Y "$(ProjectDir)demo.xml" "$(OutDir)resources\app\demo.xml"
-      </Command>
-      <Message>Copying resources and layout to output directory</Message>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
 
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -209,23 +189,23 @@
       <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>nui.lib;SDL2.lib;SDL2main.lib;SDL_ttf.lib;freetype.lib;pugixml.lib;imm32.lib;version.lib;winmm.lib;setupapi.lib;ole32.lib;oleaut32.lib;uuid.lib;advapi32.lib;shell32.lib;dinput8.lib;gdi32.lib;kernel32.lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+  </ItemDefinitionGroup>
+
+  <!-- ── Post-build: copy layouts-demo.xml + resources to output ── -->
+  <ItemDefinitionGroup>
     <PostBuildEvent>
-      <Command>
-        xcopy /Y /D /I "$(ProjectDir)..\..\resources" "$(OutDir)resources\"&#xD;&#xA;        if not exist "$(OutDir)resources\app" mkdir "$(OutDir)resources\app"&#xD;&#xA;        copy /Y "$(ProjectDir)demo.xml" "$(OutDir)resources\app\demo.xml"
-      </Command>
-      <Message>Copying resources and layout to output directory</Message>
+      <Command>xcopy /Y /E /I "$(ProjectDir)..\..\resources" "$(OutDir)resources\"
+copy /Y "$(ProjectDir)layouts-demo.xml" "$(OutDir)resources\layouts\layouts-demo.xml"</Command>
+      <Message>Copying resources and layouts-demo.xml to output directory</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
 
   <!-- ── Source files ──────────────────────────────────────────── -->
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-  </ItemGroup>
-
-  <!-- Layout file: tracked as a project input so MSBuild re-runs the
-       PostBuildEvent (which copies it to the output) whenever it changes. -->
-  <ItemGroup>
-    <None Include="demo.xml" />
+    <None Include="layouts-demo.xml" />
+    <None Include="CMakeLists.txt" />
+    <None Include="README.md" />
   </ItemGroup>
 
   <!-- ── Project references ────────────────────────────────────── -->

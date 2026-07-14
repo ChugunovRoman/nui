@@ -5,7 +5,7 @@
 //   TabControl, Treeview, Tooltip, Menu/ContextMenu, Dialog/MessageBox
 //
 // Two modes:
-//   1. XML layout  — loads example.xml if present
+//   1. XML layout  — loads demo.xml if present
 //   2. Programmatic — builds the same UI in code as a fallback
 
 #include "core/application.h"
@@ -511,7 +511,7 @@ int main(int argc, char* argv[]) {
 
     // Try XML layout first, fall back to programmatic
     std::unique_ptr<Widget> root;
-    root = loader.LoadFromFile("resources/layouts/example.xml",
+    root = loader.LoadFromFile("resources/app/demo.xml",
                                 textures, *app.GetFontManager());
     if (!root) {
         NUI_LOG("[Example] No XML layout found, building programmatically\n");

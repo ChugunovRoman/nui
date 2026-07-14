@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  NUI: Adaptive Layouts Demo (Anchor System) — XML layout
+  Demonstrates the anchor / stretch / min-max attributes.
+  Resize the window to see every region adapt.
+
+  Design baseline: 1000x720. Real sizes are used so the anchor snapshot
+  captures correct margins; anchors then adapt on resize.
+
+  CRITICAL RULE: Labels that display text inside a panel MUST be nested
+  as children of that panel (not siblings). A sibling label with
+  anchor="left top right bottom" would fill the ROOT, not the panel,
+  and diverge from the panel on resize.
+
+  Coords for children of <content> are content-local (0,0 = content origin).
+-->
+<layout name="layouts_demo" x="0" y="0" width="1000" height="720" bg_color="18,18,28">
+
+    <!-- = 1. Header — anchored top, fills full width ============== -->
+    <panel name="header" x="0" y="0" width="1000" height="44"
+           bg_color="30,30,46" border_color="60,60,80"
+           anchor="left top right" stretch_w="fill">
+        <label x="0" y="0" width="1000" height="44"
+               text="NUI  ·  Anchor System Demo"
+               font_size="18" text_color="200,210,255"
+               align_h="center" align_v="center"
+               anchor="left top right bottom"/>
+    </panel>
+
+    <!-- = 2. Footer — anchored bottom, fills full width ============ -->
+    <panel name="footer" x="0" y="692" width="1000" height="28"
+           bg_color="25,25,38" border_color="50,50,65"
+           anchor="left right bottom" stretch_w="fill">
+        <label x="0" y="0" width="1000" height="28"
+               text="Resize the window  ·  Every colored region adapts  ·  v0.4.0"
+               font_size="11" text_color="100,100,120"
+               align_h="center" align_v="center"
+               anchor="left top right bottom"/>
+    </panel>
+
+    <!-- = 3. Left sidebar — left + top + bottom (full-height) ===== -->
+    <panel name="sidebar" x="0" y="44" width="200" height="648"
+           bg_color="34,40,56" border_color="55,65,90"
+           anchor="left top bottom" stretch_h="fill">
+        <label x="0" y="0" width="200" height="648"
+               text="Sidebar&#10;left + top + bottom"
+               font_size="13" text_color="200,210,230"
+               align_h="center" align_v="center"
+               anchor="left top right bottom"/>
+    </panel>
+
+    <!-- = 4. Right sidebar — right + top + bottom ================= -->
+    <panel name="rightbar" x="820" y="44" width="180" height="648"
+           bg_color="40,34,50" border_color="70,55,85"
+           anchor="right top bottom" stretch_h="fill">
+        <label x="0" y="0" width="180" height="648"
+               text="Right&#10;right + top + bottom"
+               font_size="13" text_color="200,210,230"
+               align_h="center" align_v="center"
+               anchor="left top right bottom"/>
+    </panel>
+
+    <!-- = 5. Content area — fills space between sidebars + header/footer.
+         Children below use content-LOCAL coordinates (0,0 = content origin). -->
+    <panel name="content" x="200" y="44" width="620" height="648"
+           bg_color="22,22,32" border_color="50,50,65"
+           anchor="left top right bottom">
+
+        <!-- 5a. Edge Anchors: corner boxes -->
+        <label x="12" y="8" width="400" height="20"
+               text="1. Edge Anchors (single edge)"
+               font_size="15" text_color="170,180,210"
+               anchor="left top"/>
+
+        <panel name="corner_tl" x="12" y="32" width="110" height="60"
+               bg_color="40,90,160" border_color="70,130,200"
+               anchor="left top">
+            <label x="0" y="0" width="110" height="60"
+                   text="left + top" font_size="11" text_color="255,255,255"
+                   align_h="center" align_v="center"
+                   anchor="left top right bottom"/>
+        </panel>
+
+        <panel name="corner_tr" x="498" y="32" width="110" height="60"
+               bg_color="160,90,40" border_color="200,130,70"
+               anchor="right top">
+            <label x="0" y="0" width="110" height="60"
+                   text="right + top" font_size="11" text_color="255,255,255"
+                   align_h="center" align_v="center"
+                   anchor="left top right bottom"/>
+        </panel>
+
+        <panel name="corner_bl" x="12" y="576" width="110" height="60"
+               bg_color="40,130,70" border_color="70,180,100"
+               anchor="left bottom">
+            <label x="0" y="0" width="110" height="60"
+                   text="left + bottom" font_size="11" text_color="255,255,255"
+                   align_h="center" align_v="center"
+                   anchor="left top right bottom"/>
+        </panel>
+
+        <panel name="corner_br" x="498" y="576" width="110" height="60"
+               bg_color="130,40,120" border_color="180,70,170"
+               anchor="right bottom">
+            <label x="0" y="0" width="110" height="60"
+                   text="right + bottom" font_size="11" text_color="255,255,255"
+                   align_h="center" align_v="center"
+                   anchor="left top right bottom"/>
+        </panel>
+
+        <!-- 5b. Center -->
+        <label x="12" y="110" width="400" height="20"
+               text="2. Center (keeps size, centered)"
+               font_size="15" text_color="170,180,210"
+               anchor="left top"/>
+
+        <panel name="center_box" x="230" y="132" width="160" height="50"
+               bg_color="80,160,255" border_color="120,190,255"
+               anchor="center">
+            <label x="0" y="0" width="160" height="50"
+                   text="anchor=center" font_size="12" text_color="255,255,255"
+                   align_h="center" align_v="center"
+                   anchor="left top right bottom"/>
+        </panel>
+
+        <!-- 5c. Stretch / Fill -->
+        <label x="12" y="200" width="400" height="20"
+               text="3. Stretch between two edges (Fill)"
+               font_size="15" text_color="170,180,210"
+               anchor="left top"/>
+
+        <panel name="stretch_h" x="12" y="222" width="596" height="36"
+               bg_color="180,100,40" border_color="220,130,60"
+               anchor="left right top" stretch_w="fill">
+            <label x="0" y="0" width="596" height="36"
+                   text="left + right = fill width" font_size="12" text_color="255,255,255"
+                   align_h="center" align_v="center"
+                   anchor="left top right bottom"/>
+        </panel>
+
+        <!-- 5d. Proportional -->
+        <label x="12" y="276" width="400" height="20"
+               text="4. Proportional stretch (scales with parent)"
+               font_size="15" text_color="170,180,210"
+               anchor="left top"/>
+
+        <panel name="prop_box" x="12" y="298" width="200" height="50"
+               bg_color="160,60,200" border_color="200,90,240"
+               anchor="left top" stretch_w="proportional">
+            <label x="0" y="0" width="200" height="50"
+                   text="stretch_w=proportional" font_size="12" text_color="255,255,255"
+                   align_h="center" align_v="center"
+                   anchor="left top right bottom"/>
+        </panel>
+
+        <!-- 5e. Min / Max size -->
+        <label x="12" y="366" width="400" height="20"
+               text="5. Min / Max size constraints"
+               font_size="15" text_color="170,180,210"
+               anchor="left top"/>
+
+        <panel name="minmax_box" x="12" y="388" width="596" height="36"
+               bg_color="200,170,30" border_color="240,220,60"
+               anchor="left right top" stretch_w="fill"
+               min_width="100" max_width="300">
+            <label x="0" y="0" width="596" height="36"
+                   text="fill, min=100, max=300" font_size="12" text_color="255,255,255"
+                   align_h="center" align_v="center"
+                   anchor="left top right bottom"/>
+        </panel>
+
+        <!-- = 6. Static legend (non-anchored, absolute) ============
+             Demonstrates backward compatibility. -->
+        <panel x="12" y="440" width="596" height="200"
+               bg_color="28,28,40" border_color="50,50,65"/>
+        <label x="22" y="450" width="576" height="20"
+               text="Legend (static, absolute coords - NOT anchored)"
+               font_size="13" text_color="170,180,210"/>
+        <label x="22" y="476" width="576" height="160"
+               text="anchor=left top right  -&gt;  full-width bar&#10;anchor=left top bottom  -&gt;  full-height column&#10;anchor=center  -&gt;  centered, fixed size&#10;anchor=all  -&gt;  fill parent (shorthand)&#10;stretch_w=proportional  -&gt;  scale with parent&#10;min_width / max_width  -&gt;  clamp size&#10;&#10;This panel is NOT anchored - it stays put on resize."
+               font_size="11" text_color="150,150,170" word_wrap="true"/>
+    </panel>
+
+</layout>

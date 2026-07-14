@@ -121,6 +121,113 @@ UI описывается в XML файлах. LayoutLoader парсит XML и 
 | `align_h` | enum | left | left / center / right |
 | `align_v` | enum | top | top / center / bottom |
 | `tooltip` | string | — | Подсказка |
+| `anchor` | enum | — | Якоря: `left` `top` `right` `bottom` `center` `all` (через пробел). См. [Якоря и адаптивная вёрстка](#якоря-и-адаптивная-вёрстка) |
+| `anchor_left`, `anchor_right`, `anchor_top`, `anchor_bottom` | float | -1 | Нормализованные точки привязки (0..1). Альтернатива `anchor`; -1 = наследуется из флагов |
+| `stretch_w`, `stretch_h` | enum | fixed | Режим размера: `fixed` / `fill` / `proportional` |
+| `min_width`, `min_height` | int | 0 | Минимальный размер (clamp после layout) |
+| `max_width`, `max_height` | int | — | Максимальный размер (clamp после layout) |
+
+## Якоря и адаптивная вёрстка
+
+По умолчанию виджеты используют **абсолютные** координаты (`x`, `y`, `width`, `height`) и не меняют положение при ресайзе окна. Система якорей (v0.4.0) позволяет виджету автоматически адаптироваться при изменении размера родителя.
+
+### Модель
+
+Гибридная: простая флаговая мнемоника + опциональные нормализованные точки.
+
+```
+┌──────────────────────────────────────┐
+│ [Logo]  anchor="left top"            │  всегда в левом верхнем углу
+│                                      │
+│         [Button]  anchor="center"    │  всегда по центру
+│                                      │
+│ [Status] anchor="left bottom"        │  всегда в левом нижнем углу
+│                                      │
+│ [Sidebar] anchor="left top bottom"   │  растягивается по высоте,
+│           width="250"                │  ширина фиксирована
+│                                      │
+│ [Content] anchor="all"               │  заполняет всё оставшееся
+│           stretch_w="fill"           │  пространство
+│           stretch_h="fill"           │
+└──────────────────────────────────────┘
+```
+
+### Атрибут `anchor`
+
+Пробел-разделённые токены:
+
+| Токен | Эффект |
+|-------|--------|
+| `left` / `right` / `top` / `bottom` | Зафиксировать соответствующий край (margin остаётся постоянным) |
+| `left` + `right` (или `top` + `bottom`) | Растяжение между двумя краями |
+| `center` | Без привязки к краям — центрирование с сохранением design-размера |
+| `all`, `fill` | Синоним для `left top right bottom` (полное заполнение) |
+
+### Нормализованные якоря (Godot-style)
+
+Для точного позиционирования в процентах от родителя вместо `anchor` используются `anchor_left`/`anchor_right`/`anchor_top`/`anchor_bottom` (0..1):
+
+```xml
+<!-- виджет занимает правую четверть по ширине -->
+<panel anchor_left="0.75" anchor_right="1.0"
+       anchor_top="0.0"   anchor_bottom="1.0"
+       stretch_w="fill" stretch_h="fill"/>
+```
+
+### `stretch_w` / `stretch_h`
+
+| Значение | Поведение размера |
+|----------|-------------------|
+| `fixed` | Сохранять design-размер (по умолчанию) |
+| `fill` | Заполнить всё доступное пространство (игнорируется, если заданы оба противоположных якоря — тогда fill происходит автоматически) |
+| `proportional` | Масштабировать пропорционально размеру родителя относительно design-размера |
+
+### Примеры
+
+```xml
+<!-- Кнопка по центру, 200x50 -->
+<button name="btn_play"
+        anchor="center"
+        width="200" height="50"
+        text="PLAY"/>
+
+<!-- Сайдбар: левый край, растяжение по высоте -->
+<panel name="sidebar"
+       anchor="left top bottom"
+       width="250"/>
+
+<!-- Контент: заполняет всё -->
+<image name="bg"
+       anchor="all"
+       stretch_w="fill" stretch_h="fill"
+       src="resources/images/bg.jpg" scale="fill"/>
+
+<!-- Футер: прижат к низу, растягивается по ширине -->
+<panel name="footer"
+       anchor="left right bottom"
+       height="28"/>
+```
+
+### C++ API
+
+```cpp
+using namespace nui;
+btn->SetAnchor(AnchorFlag::Center);
+sidebar->SetAnchor(AnchorFlag::Left | AnchorFlag::Top | AnchorFlag::Bottom);
+sidebar->SetStretchH(StretchMode::Fill);
+content->SetAnchor(AnchorFlag::Left | AnchorFlag::Top |
+                   AnchorFlag::Right | AnchorFlag::Bottom);
+content->SetStretch(StretchMode::Fill, StretchMode::Fill);
+
+// Godot-style нормализованные якоря
+panel->SetAnchor(0.75f, 1.0f, 0.0f, 1.0f);
+
+// Ограничения размера
+panel->SetMinSize(100, 50);
+panel->SetMaxSize(500, INT_MAX);
+```
+
+> **Важно:** `SetAnchor` делает snapshot текущей геометрии как «design-размер». Вызывайте его **после** `SetRect`/`SetSize`, чтобы snapshot захватил корректные значения.
 
 ## Цвета
 
