@@ -40,7 +40,7 @@ set(EXAMPLE_SOURCES
     ${NUI_ROOT}/ui/editbox.cpp
     ${NUI_ROOT}/ui/progressbar.cpp
     ${NUI_ROOT}/ui/scrollview.cpp
-    ${NUI_ROOT}/xml/layout_loader.cpp
+    ${NUI_ROOT}/ui/tooltip.cpp
 )
 
 add_executable(${PROJECT_NAME} WIN32 ${EXAMPLE_SOURCES})
