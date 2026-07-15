@@ -154,7 +154,75 @@ content->SetStretch(StretchMode::Fill, StretchMode::Fill);
   - Рендер-кэш перестраивается только по dirty-флагу — статичные вращаемые виджеты бесплатны, анимация вращения не инвалидирует кэш
   - Ownership tweens: новая анимация свойства отменяет предыдущую (нет конфликта)
 
-### 6. GPU рендер (альтернативный бэкенд)
+### 6. Кастомный window management
+
+Поддержка borderless окна с пользовательскими элементами управления — стандарт для современных лаунчеров и приложений.
+
+| Фича | Описание | Приоритет | Статус |
+|------|----------|-----------|--------|
+| **AppDesc: iconPath** | Установка иконки окна через `SDL_SetWindowIcon` | Высокий | ❌ Не начато |
+| **AppDesc: borderless** | Режим без рамки `SDL_WINDOW_BORDERLESS` | Высокий | ❌ Не начато |
+| **TitlebarWidget** | Виджет-заголовок с drag-to-move | Высокий | ❌ Не начато |
+| **TitlebarWidget: кнопки** | Minimize, Maximize/Restore, Close | Высокий | ❌ Не начато |
+| **Drag-to-move** | Перетаскивание borderless окна за titlebar | Высокий | ❌ Не начато |
+| **Double-click maximize** | Двойной клик по titlebar → maximize/restore | Средний | ❌ Не начато |
+| **Resize border** | Тянутые края/углы для ресайза borderless окна | Средний | ❌ Не начато |
+| **Snap to screen edges** | Прилипание к краям экрана при drag | Низкий | ❌ Не начато |
+
+**API:**
+
+```cpp
+// AppDesc — конфигурация окна
+nui::AppDesc desc;
+desc.title      = "My Launcher";
+desc.iconPath   = "assets/icon.png";
+desc.borderless = true;
+
+// TitlebarWidget — программно
+auto titlebar = std::make_unique<TitlebarWidget>();
+titlebar->SetTitle("My Launcher");
+titlebar->SetIcon("assets/icon_small.png");
+titlebar->ShowMinimize(true);
+titlebar->ShowMaximize(true);
+titlebar->ShowClose(true);
+titlebar->SetOnClose([]() { nui::GetApp()->Quit(); });
+titlebar->SetOnMinimize([]() { /* minimize logic */ });
+
+// XML
+<titlebar name="tb" anchor="left top right" height="32"
+          title="My Launcher"
+          show_minimize="1" show_maximize="1" show_close="1"/>
+```
+
+**Реализация:**
+
+- `SDL_WINDOW_BORDERLESS` в `Application::Initialize`
+- `SDL_SetWindowIcon` из загруженной через stb_image PNG/BMP
+- `SDL_GetWindowPosition` / `SDL_SetWindowPosition` для drag
+- `SDL_MinimizeWindow` / `SDL_MaximizeWindow` / `SDL_RestoreWindow`
+- Обработка `SDL_MOUSEBUTTONDOWN/MOTION/UP` для drag и resize borders
+- Виджет `TitlebarWidget` с встроенными кнопками и drag-зоной
+
+### 7. System Tray (трей)
+
+Иконка в системном трее с контекстным меню.
+
+| Фича | Описание | Приоритет | Статус |
+|------|----------|-----------|--------|
+| **Tray icon** | Иконка в системном трее (Windows: `Shell_NotifyIcon`) | Средний | ❌ Не начато |
+| **Tray menu** | Контекстное меню по правому клику | Средний | ❌ Не начато |
+| **Minimize to tray** | Сворачивание окна в трей вместо taskbar | Средний | ❌ Не начато |
+| **Tray balloon/tooltip** | Всплывающие уведомления из трея | Низкий | ❌ Не начато |
+| **Кроссплатформенность** | Linux: `libappindicator` / `StatusNotifier`, macOS: `NSStatusBar` | Низкий | ❌ Не начато |
+
+**Зависимости:**
+- Windows: Win32 API (`shellapi.h`) — нативно, без доп. библиотек
+- Linux: `libappindicator3` или `StatusNotifierItem` (D-Bus)
+- macOS: `NSStatusBar` через Objective-C
+
+**Подход:** отдельный класс `SystemTray` с платформенными бэкендами, аналогично архитектуре Canvas для рендера.
+
+### 8. GPU рендер (альтернативный бэкенд)
 
 Возможность переключиться с CPU software rendering на GPU для производительности.
 
