@@ -1,0 +1,8 @@
+// Windows resource file for nui-frameless.exe
+// Embeds the application icon into the executable.
+// NOTE: icon.ico must be in .ico format (convert from PNG if needed).
+
+#include <windows.h>
+
+// Icon (1 = IDI_ICON1)
+1 ICON "resources\\icon.ico"

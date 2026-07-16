@@ -18,6 +18,7 @@
 #include "ui/treeview.h"
 #include "ui/menu.h"
 #include "ui/dialog.h"
+#include "ui/titlebar.h"
 #include "renderer/texture.h"
 #include "renderer/font.h"
 #include "renderer/resource.h"
@@ -219,6 +220,10 @@ std::unique_ptr<Widget> LayoutLoader::ParseWidget(pugi::xml_node node,
         auto d = std::make_unique<Dialog>();
         ParseDialog(node, d.get(), textures, fonts);
         widget = std::move(d);
+    } else if (type == "titlebar") {
+        auto tb = std::make_unique<TitlebarWidget>();
+        ParseTitlebar(node, tb.get(), textures, fonts);
+        widget = std::move(tb);
     } else {
         widget = std::make_unique<Widget>();
     }
@@ -289,6 +294,10 @@ void LayoutLoader::ParseCommonProps(Widget* widget, pugi::xml_node n) {
 
     const char* tooltip = n.attribute("tooltip").as_string(nullptr);
     if (tooltip) widget->SetTooltip(tooltip);
+
+    // Window drag (borderless mode): any widget can be a drag zone
+    if (n.attribute("draggable"))
+        widget->SetWindowDragEnabled(n.attribute("draggable").as_bool(false));
 
     // ── Anchor / responsive layout ────────────────────────────
     // Order matters: stretch/min/max must be applied BEFORE SetAnchor so the
@@ -714,6 +723,45 @@ void LayoutLoader::ParseDialog(pugi::xml_node n, Widget* widget,
         auto child = ParseWidget(childNode, textures, fonts);
         if (child) dlg->AddContent(std::move(child));
     }
+}
+
+void LayoutLoader::ParseTitlebar(pugi::xml_node n, Widget* widget,
+                                  TextureCache& textures, FontManager& fonts) {
+    auto* tb = static_cast<TitlebarWidget*>(widget);
+
+    const char* title = n.attribute("title").as_string(nullptr);
+    if (title) tb->SetTitle(title);
+
+    int fontSize = n.attribute("font_size").as_int(14);
+    tb->SetFontSize(fontSize);
+
+    const char* fontPath = n.attribute("font").as_string(nullptr);
+    if (fontPath) {
+        Font* font = fonts.Get(fontPath, fontSize);
+        if (font) tb->SetFont(font);
+    }
+
+    const char* textColor = n.attribute("text_color").as_string(nullptr);
+    if (textColor) tb->SetTitleColor(ParseColor(textColor));
+
+    // Button visibility (all shown by default)
+    if (n.attribute("show_minimize"))
+        tb->ShowMinimize(n.attribute("show_minimize").as_bool(true));
+    if (n.attribute("show_maximize"))
+        tb->ShowMaximize(n.attribute("show_maximize").as_bool(true));
+    if (n.attribute("show_close"))
+        tb->ShowClose(n.attribute("show_close").as_bool(true));
+
+    // Icon (optional)
+    const char* iconSrc = n.attribute("icon").as_string(nullptr);
+    if (iconSrc) {
+        Texture* tex = textures.Get(iconSrc);
+        if (tex) tb->SetIcon(tex);
+    }
+
+    // Titlebar is draggable by default; allow override via "draggable" attr
+    if (n.attribute("draggable"))
+        tb->SetWindowDragEnabled(n.attribute("draggable").as_bool(true));
 }
 
 } // namespace nui

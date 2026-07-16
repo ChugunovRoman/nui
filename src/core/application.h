@@ -7,6 +7,8 @@
 #include <functional>
 #include <vector>
 
+#include <SDL.h>
+
 struct SDL_Window;
 struct SDL_Surface;
 
@@ -20,10 +22,22 @@ class InputState;
 
 // ── Application configuration ───────────────────────────────────
 struct AppDesc {
-    std::string title   = "NUI";
-    int         width   = 1024;
-    int         height  = 768;
-    bool        resizable = true;
+    std::string title      = "NUI";
+    std::string iconPath;              // path to PNG/BMP icon for window + taskbar
+    int         width      = 1024;
+    int         height     = 768;
+    bool        resizable  = true;
+    bool        borderless = false;    // SDL_WINDOW_BORDERLESS (no frame)
+
+    // ── Borderless customization (ISSUE 1: no hardcoded magic numbers) ──
+    // All sizes are in logical (DPI-scaled) pixels. They override the built-in
+    // defaults; leave at 0 to keep the default.
+    int  resizeBorderWidth = 5;   // px hit zone for edge/corner resize
+    int  minWindowWidth    = 100; // minimum window size enforced on resize
+    int  minWindowHeight   = 100;
+    int  titlebarButtonSize = 28; // square size of titlebar min/max/close buttons
+    int  doubleClickMs     = 500; // double-click window for titlebar maximize
+    int  dragThreshold     = 4;   // px the mouse must travel before a drag starts
 };
 
 // ── Application class ───────────────────────────────────────────
@@ -47,6 +61,42 @@ public:
     const InputState* GetInput()       const { return m_input.get(); }
     int               GetWidth()       const { return m_width; }
     int               GetHeight()      const { return m_height; }
+    struct SDL_Window* GetSDLWindow()  const { return m_window; }
+    bool              IsBorderless()   const { return m_borderless; }
+    bool              IsMaximized()    const { return m_maximized; }
+
+    // Window management (borderless mode)
+    void ToggleMaximize();
+
+    // Borderless customization (ISSUE 1: configurable, DPI-aware)
+    void SetResizeBorderWidth(int px) { m_resizeBorderWidth = px; }
+    int  GetResizeBorderWidth() const { return m_resizeBorderWidth; }
+    void SetMinWindowSize(int w, int h) { m_minWindowW = w; m_minWindowH = h; }
+    int  GetMinWindowWidth()  const { return m_minWindowW; }
+    int  GetMinWindowHeight() const { return m_minWindowH; }
+
+    // Drag threshold (ISSUE 1/3): minimal mouse travel before a window drag
+    // begins. Prevents a click from nudging the window.
+    void SetDragThreshold(int px) { m_dragThreshold = px; }
+    int  GetDragThreshold() const { return m_dragThreshold; }
+
+    // Titlebar button size and double-click window (ISSUE 1). Exposed here so
+    // TitlebarWidget can read the app-wide settings; the titlebar also keeps
+    // per-widget overrides for standalone use.
+    void SetTitlebarButtonSize(int px) { m_titlebarButtonSize = px; }
+    int  GetTitlebarButtonSize() const { return m_titlebarButtonSize; }
+    void SetDoubleClickMs(int ms) { m_doubleClickMs = ms; }
+    int  GetDoubleClickMs() const { return m_doubleClickMs; }
+
+    // ── DPI awareness (ISSUE 1: HiDPI scaling) ─────────────────────
+    // Returns the content scale factor of the window's display (>= 1.0).
+    // On HiDPI monitors SDL reports a scale > 1; borderless geometry (resize
+    // border, button size, drag threshold) is multiplied by this factor so the
+    // hit zones stay comfortable regardless of the display DPI.
+    float GetDpiScale() const { return m_dpiScale; }
+    void  SetDpiScale(float scale);  // override (e.g. from app settings)
+    // Logical->physical pixel helper for borderless hit testing.
+    int   ScalePx(int logicalPx) const;
 
     // Root widget (the entire UI tree hangs from here)
     Widget*           GetRoot()        const { return m_root.get(); }
@@ -125,6 +175,56 @@ private:
     int  m_width   = 0;
     int  m_height  = 0;
     bool m_running = false;
+
+    // ── Borderless window management ───────────────────────────
+    bool m_borderless = false;
+    bool m_maximized  = false;
+    // Saved window rect before maximize (for borderless manual maximize)
+    int  m_restoreX = 0, m_restoreY = 0;
+    int  m_restoreW = 0, m_restoreH = 0;
+    // ISSUE 2: true once a valid pre-maximize rect has been captured. Guards
+    // RestoreFromMaximize() against using stale/garbage coordinates (e.g. when
+    // the OS maximized the window via Win+Up before we ever saved a rect).
+    bool m_hasRestoreRect = false;
+
+    // Drag state (window move via draggable widgets)
+    bool m_dragging    = false;
+    int  m_dragOffsetX = 0;
+    int  m_dragOffsetY = 0;
+
+    // Pending drag: mouse pressed on a draggable widget, but threshold not
+    // yet crossed. Promoted to m_dragging once the mouse moves beyond the
+    // threshold (prevents accidental drag on simple clicks).
+    bool m_dragPending    = false;
+    int  m_dragStartMouseX = 0;
+    int  m_dragStartMouseY = 0;
+    int  m_dragThreshold = 4;  // px — min movement to start drag (ISSUE 1: configurable)
+
+    // Resize state (border resize in borderless mode)
+    bool m_resizing = false;
+    int  m_resizeEdge = 0;  // bitmask: 1=Left, 2=Right, 4=Top, 8=Bottom
+    int  m_resizeStartMouseX = 0, m_resizeStartMouseY = 0;
+    int  m_resizeStartWinX   = 0, m_resizeStartWinY   = 0;
+    int  m_resizeStartW      = 0, m_resizeStartH      = 0;
+
+    int m_resizeBorderWidth = 5;   // customizable via SetResizeBorderWidth
+    int m_minWindowW = 100;        // customizable via SetMinWindowSize
+    int m_minWindowH = 100;
+
+    // Titlebar defaults shared via AppDesc (ISSUE 1)
+    int m_titlebarButtonSize = 28;
+    int m_doubleClickMs = 500;
+
+    // DPI content scale of the window's display (ISSUE 1: HiDPI)
+    float m_dpiScale = 1.0f;
+
+    // Resize cursors: [0]=nwse, [1]=nesw, [2]=horiz, [3]=vert
+    SDL_Cursor* m_resizeCursors[4] = {};
+    SDL_Cursor* m_defaultCursor    = nullptr;
+
+    int GetResizeEdge(int mx, int my) const;
+    void UpdateResizeCursor(int mx, int my);
+    void RestoreFromMaximize();
 };
 
 // Singleton access (convenience)

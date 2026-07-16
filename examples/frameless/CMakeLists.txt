@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(nui-example LANGUAGES CXX)
+project(nui-frameless LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -25,6 +25,7 @@ endif()
 # ── Sources ──────────────────────────────────────────────────────
 set(EXAMPLE_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/resource.rc
 
     # Library sources
     ${NUI_ROOT}/core/application.cpp
@@ -81,17 +82,12 @@ elseif(UNIX AND NOT APPLE)
 endif()
 
 # ── Copy runtime resources next to the executable ──────────────────
-# Layout + bundled fonts/images live under examples/app/demo.xml and
-# the top-level resources/ folder. They are needed at runtime because the
-# loader reads them from disk relative to the working directory.
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_CURRENT_SOURCE_DIR}/../../resources"
         "$<TARGET_FILE_DIR:${PROJECT_NAME}>/resources"
-    COMMAND ${CMAKE_COMMAND} -E make_directory
-        "$<TARGET_FILE_DIR:${PROJECT_NAME}>/resources/app"
-    COMMAND ${CMAKE_COMMAND} -E copy
-        "${CMAKE_CURRENT_SOURCE_DIR}/demo.xml"
-        "$<TARGET_FILE_DIR:${PROJECT_NAME}>/resources/app/demo.xml"
-    COMMENT "Copying resources and demo.xml to output directory"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_CURRENT_SOURCE_DIR}/resources"
+        "$<TARGET_FILE_DIR:${PROJECT_NAME}>/resources"
+    COMMENT "Copying resources to output directory"
 )

@@ -128,6 +128,17 @@ public:
     bool IsFocused() const { return m_focused; }
     void ClearFocus();
 
+    // ── Window drag (borderless mode) ─────────────────────────
+    // Any widget can become a drag zone for borderless window movement.
+    // When enabled, clicking on this widget (and not on a child that
+    // consumes the click) starts a window drag via Application.
+    void SetWindowDragEnabled(bool enabled) { m_windowDrag = enabled; }
+    bool IsWindowDragEnabled() const { return m_windowDrag; }
+
+    // Find the deepest widget at screen-space point (reverse z-order).
+    // Returns nullptr if no widget contains the point.
+    Widget* FindWidgetAt(int x, int y);
+
     // ── Rotation ───────────────────────────────────────────────
     void SetRotation(float degrees);
     float GetRotation() const { return m_rotation; }
@@ -206,6 +217,7 @@ protected:
     bool         m_visible = true;
     bool         m_enabled = true;
     bool         m_focused = false;
+    bool         m_windowDrag = false;  // drag zone for borderless windows
     std::string  m_tooltip;
 
     // Rotation. Rotation origin (pivot) is in normalized [0,1] rect coords and

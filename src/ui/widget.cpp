@@ -479,6 +479,18 @@ bool Widget::HitTest(int mx, int my) const {
     return abs.Contains(mx, my);
 }
 
+Widget* Widget::FindWidgetAt(int x, int y) {
+    if (!m_visible) return nullptr;
+    // Reverse order: topmost child first (last child = highest z-order)
+    for (auto it = m_children.rbegin(); it != m_children.rend(); ++it) {
+        Widget* found = (*it)->FindWidgetAt(x, y);
+        if (found) return found;
+    }
+    // Leaf or no child hit — check self
+    if (GetAbsoluteRect().Contains(x, y)) return this;
+    return nullptr;
+}
+
 // ── User data ───────────────────────────────────────────────────
 
 void Widget::SetUserData(const std::string& key, const std::string& value) {

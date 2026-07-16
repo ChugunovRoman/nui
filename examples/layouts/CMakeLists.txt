@@ -55,6 +55,7 @@ set(EXAMPLE_SOURCES
     ${NUI_ROOT}/ui/tooltip.cpp
     ${NUI_ROOT}/ui/menu.cpp
     ${NUI_ROOT}/ui/dialog.cpp
+    ${NUI_ROOT}/ui/titlebar.cpp
     ${NUI_ROOT}/xml/layout_loader.cpp
 )
 

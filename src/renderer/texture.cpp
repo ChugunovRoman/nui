@@ -10,10 +10,13 @@
 #include <cstring>
 #include <map>
 
-// stb_image: include and define implementation in this translation unit
-#ifndef STB_IMAGE_IMPLEMENTATION
+// stb_image: this is the single translation unit that owns the implementation.
+// ISSUE 4: define STB_IMAGE_IMPLEMENTATION unconditionally here — stb_image.h
+// already guards against duplicate definitions internally via __STB_IMAGE_. Any
+// other file that needs to load images must call LoadImageToSurface() below
+// instead of including this header, so a unity build cannot accidentally pull
+// the implementation in twice.
 #define STB_IMAGE_IMPLEMENTATION
-#endif
 #include "renderer/stb_image.h"
 
 namespace nui {
@@ -154,6 +157,31 @@ Texture* TextureCache::Get(const std::string& path) {
 
 void TextureCache::Clear() {
     m_cache.clear();
+}
+
+// ISSUE 4: single stb_image entry point. Loads an image file as RGBA32 and
+// wraps it in an SDL_Surface (caller owns it). Keeps stb_image confined to this
+// translation unit so no other file needs to include the stb header.
+SDL_Surface* LoadImageToSurface(const std::string& path) {
+    int iw = 0, ih = 0, ich = 0;
+    unsigned char* pixels = stbi_load(path.c_str(), &iw, &ih, &ich, 4);
+    if (!pixels) {
+        NUI_LOG_ERROR("[NUI] Failed to load image: %s\n", path.c_str());
+        return nullptr;
+    }
+    // stb_image gives RGBA (4 channels). SDL expects the masks below on
+    // little-endian (BGRA byte order for RGBA data).
+    SDL_Surface* surf = SDL_CreateRGBSurfaceFrom(
+        pixels, iw, ih, 32, iw * 4,
+        0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+    if (surf) {
+        // Detach from the stb buffer so the surface owns its own copy.
+        SDL_Surface* copy = SDL_ConvertSurface(surf, surf->format, 0);
+        SDL_FreeSurface(surf);
+        surf = copy;
+    }
+    stbi_image_free(pixels);
+    return surf;
 }
 
 } // namespace nui

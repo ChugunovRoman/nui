@@ -60,6 +60,8 @@ private:
     void ParseMenu(pugi::xml_node node, Widget* widget, FontManager& fonts);
     void ParseDialog(pugi::xml_node node, Widget* widget,
                      TextureCache& textures, FontManager& fonts);
+    void ParseTitlebar(pugi::xml_node node, Widget* widget,
+                       TextureCache& textures, FontManager& fonts);
 
     // True if a parent widget consumes `childTag` inside its own ParseXxx (and
     // thus the generic child recursion should skip it). Keeps <item>/<tab>/

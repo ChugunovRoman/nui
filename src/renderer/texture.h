@@ -62,4 +62,11 @@ private:
     std::map<std::string, Texture> m_cache;
 };
 
+// ISSUE 4: load an image file into a freshly allocated SDL_Surface (RGBA32).
+// This is the ONLY entry point that touches stb_image, so other translation
+// units never need to include the stb header (which would risk duplicate
+// definitions under unity build). Returns nullptr on failure. The caller owns
+// the returned surface and must SDL_FreeSurface() it.
+SDL_Surface* LoadImageToSurface(const std::string& path);
+
 } // namespace nui

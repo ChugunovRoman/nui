@@ -24,10 +24,18 @@ app.Shutdown();
 
 | Поле | Тип | По умолчанию | Описание |
 |------|-----|-------------|----------|
-| title | string | "NUI App" | Заголовок окна |
+| title | string | "NUI" | Заголовок окна |
+| iconPath | string | "" | Путь к PNG/BMP иконке (окно + таскбар) |
 | width | int | 1024 | Ширина |
 | height | int | 768 | Высота |
 | resizable | bool | true | Изменяемый размер |
+| borderless | bool | false | Без системной рамки (кастомный titlebar) |
+| resizeBorderWidth | int | 5 | Зона захвата краёв для resize (px, DPI-scaled) |
+| minWindowWidth | int | 100 | Минимальная ширина окна при resize |
+| minWindowHeight | int | 100 | Минимальная высота окна при resize |
+| titlebarButtonSize | int | 28 | Размер кнопок min/max/close (px, DPI-scaled) |
+| doubleClickMs | int | 500 | Окно двойного клика для maximize (мс) |
+| dragThreshold | int | 4 | Мин. сдвиг мыши до старта drag (px, DPI-scaled) |
 
 ### Методы Application
 
@@ -43,6 +51,16 @@ app.Shutdown();
 | `GetFontManager()` | Получить FontManager |
 | `GetInput()` | Получить InputState |
 | `GetWidth()` / `GetHeight()` | Размер окна |
+| `GetSDLWindow()` | Внутреннее SDL-окно |
+| `IsBorderless()` / `IsMaximized()` | Состояние окна |
+| `ToggleMaximize()` | Развернуть/восстановить окно |
+| `SetResizeBorderWidth(px)` | Переопределить зону resize |
+| `SetMinWindowSize(w, h)` | Переопределить мин. размер |
+| `SetDragThreshold(px)` | Переопределить порог drag |
+| `SetTitlebarButtonSize(px)` | Размер кнопок titlebar |
+| `SetDoubleClickMs(ms)` | Окно двойного клика |
+| `GetDpiScale()` / `SetDpiScale(s)` | Content scale дисплея (HiDPI) |
+| `ScalePx(logicalPx)` | Логические px → физические (с учётом DPI) |
 | `SetOnTick(cb)` | Callback каждый кадр |
 | `DispatchOnMainThread(cb)` | Callback на main thread |
 

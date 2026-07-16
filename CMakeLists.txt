@@ -101,6 +101,7 @@ set(NUI_SOURCES
     src/ui/tooltip.cpp
     src/ui/menu.cpp
     src/ui/dialog.cpp
+    src/ui/titlebar.cpp
 
     # XML layout loader
     src/xml/layout_loader.cpp
@@ -144,3 +145,4 @@ endif()
 add_subdirectory(examples/app)
 add_subdirectory(examples/animations)
 add_subdirectory(examples/layouts)
+add_subdirectory(examples/frameless)
