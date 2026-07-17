@@ -1,5 +1,5 @@
 // NUI: Adaptive Layouts Demo (Anchor System)
-// Demonstrates every feature of the responsive layout system (v0.4.0):
+// Demonstrates every feature of the responsive layout system:
 //   1. Edge anchor flags (left/top/right/bottom)
 //   2. Center anchoring
 //   3. Stretch between two opposite edges (fill)
@@ -125,7 +125,7 @@ std::unique_ptr<Widget> BuildLayoutsDemo(FontManager& fonts) {
     // 2. Footer bar — anchored bottom, fills full width
     // ════════════════════════════════════════════════════════════
     auto footer = MakeBox("footer",
-        "Resize the window  ·  Every colored region adapts  ·  v0.4.0",
+        "Resize the window  ·  Every colored region adapts",
         Color(25, 25, 38), Color(50, 50, 65));
     footer->SetRect(0, 0, 1000, 28);
     footer->SetAnchor(AnchorFlag::Left | AnchorFlag::Right | AnchorFlag::Bottom);

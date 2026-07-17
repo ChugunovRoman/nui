@@ -22,7 +22,7 @@ class Canvas;
 enum class AlignH { Left, Center, Right };
 enum class AlignV { Top,  Center, Bottom };
 
-// ── Anchor system (responsive layout, v0.4.0) ───────────────────
+// ── Anchor system (responsive layout) ───────────────────────────
 // Edge flags (WinForms-style). A widget pinned to two opposite edges
 // (Left|Right or Top|Bottom) stretches between them. Composable with |.
 enum class AnchorFlag : uint8_t {

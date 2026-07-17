@@ -32,7 +32,7 @@
            bg_color="25,25,38" border_color="50,50,65"
            anchor="left right bottom" stretch_w="fill">
         <label x="0" y="0" width="1000" height="28"
-               text="Resize the window  ·  Every colored region adapts  ·  v0.4.0"
+               text="Resize the window  ·  Every colored region adapts"
                font_size="11" text_color="100,100,120"
                align_h="center" align_v="center"
                anchor="left top right bottom"/>
